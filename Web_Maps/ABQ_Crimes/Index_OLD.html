@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--<meta http-equiv="x-ua-compatible" content="IE=edge"> <!--switch to this for IE 10 compatibility mode bullcrap-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
+      on iOS devices-->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<script src="turf.min.js"></script>
+	<style>
+		body {padding:0;margin:0;background-color:black;}
+		html, body {height:100%;width:100%;}
+		#map_title {position:relative;text-align:center;font-family:verdana, arial, sans serif; font-size:11pt;background-color:cornsilk;border-style:solid;border-width:1px;height:22px;width:125px;margin:0 auto;z-index:99;}
+	</style>
+    <title>ABQ Crime Map</title>
+	<script type="text/javascript">
+	</script>
+</head>
+<body>
+
+	<div id='map' style='width:99%;height:99%'>
+		<div id='map_title'>ABQ Crime Map</div>
+	</div>
+	<script type="text/javascript">
+//***other stuff to add??
+//city of ABQ boundary (mask)
+//don't zoom out to marker bnds if current zoom is greater (bnds is level 16 on laptop)
+//zoom in beyond level 17 for ESRI basemaps and automatically zoom back out to max zoom of OSM
+//marker clustering for points right on top of each other
+
+	strAboutThisMap = ' | <a href="AboutThisMap.html">AAAbout this map</a>'
+	//base layers you want to use
+	var esriWorldStreetMap = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png', {
+		maxZoom: 17, //20 LODs
+		attribution: 'Basemap by &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
+
+		esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
+		maxZoom: 17, //20 LODs
+		attribution: 'Basemap by &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
+
+		osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 17, //17 LODs
+		attribution: 'Basemap by &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' + strAboutThisMap});
+		//Stamen has some cool basemaps too
+
+	//initialize the map
+	var map = L.map('map', {
+		center: [35.10418, -106.62987],
+		zoom: 12,
+		layers: [osmMapnik] //the default basemap
+	});
+
+	//add base layers and the map control
+	var baseLayers = {
+		"ESRI Streets": esriWorldStreetMap,
+		"ESRI Imagery": esriWorldImagery,
+		"OpenStreetMap": osmMapnik
+	};
+	L.control.layers(baseLayers).addTo(map);
+
+
+//should I create a "user clicked here" icon or not? Maybe a bullseye? Or is it better not to have one?
+var CampIcon = L.Icon.extend({
+	options: {
+		iconUrl: 'AA_Camps/tent.png',
+		iconSize:     [32, 37],
+		iconAnchor:   [16, 37], //adjust so tip of icon is at marker location
+		popupAnchor:  [0, -37] //where popup will open relative to icon anchor
+	}
+});
+var aCampIcon = new CampIcon();
+
+
+	//get Leaflet XY from map click and convert to GeoJSON
+	//create outside function so they get refreshed/re-used with each click
+	var geojsonPoint;
+	var leafletMarker;
+	map.on('click', function(e){
+		if (leafletMarker) { map.removeLayer(leafletMarker) }; //remove previous marker from map
+		leafletMarker = L.marker(e.latlng,{icon: aCampIcon}).bindPopup("I clicked the map here.").addTo(map);
+		geojsonPoint = leafletMarker.toGeoJSON();
+		GetCrimes(geojsonPoint);
+	});
+
+	var onlyAutoAndBurglary = false; //initialize boolean
+	//create control for check box and add to map
+	var command = L.control({position: 'bottomleft'});
+	command.onAdd = function (map) {
+		var div = L.DomUtil.create('div', 'command');
+		div.innerHTML = '<form style="font-size:9pt; vertical-align:top; background-color:white; border-style:solid; border-width:1px; height:20px; width:135px; z-index:98;"><input id="command" type="checkbox"/>Only Auto & Burglary</form>';
+		return div;
+	};
+	command.addTo(map);
+
+	document.getElementById("command").addEventListener("click", function(e) {
+		e.stopPropagation(); //prevent mouse click from propagating up to map, otherwise map will pan
+		if (this.checked) {
+			onlyAutoAndBurglary = true;
+		} else {
+			onlyAutoAndBurglary = false;
+		}
+		GetCrimes(geojsonPoint);
+	});
+
+	var markers = new L.FeatureGroup(); //create outside function so crimes get refreshed with each click
+	function GetCrimes(){
+		var buffered = turf.buffer(geojsonPoint,.5,'miles'); //create buffer around geojsonPoint
+		//var result = turf.featurecollection(buffered.features.concat(geojsonPoint)); //???what purpose does this serve???
+		enveloped = turf.envelope(buffered); //get envelope of buffer
+		var params = 'f=json&outSR=4326&outFields=*&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&geometry=' + enveloped.geometry.coordinates[0][0][0] + ','+ enveloped.geometry.coordinates[0][0][1] + ',' + enveloped.geometry.coordinates[0][2][0] + ',' + enveloped.geometry.coordinates[0][2][1]; //params and LL and UR corner points of envelope for query
+		var url = 'http://coagisweb.cabq.gov/arcgis/rest/services/public/APD_Incidents/MapServer/0/query'; //*note: data goes back 180 days
+		//console.log(params);
+		http=new XMLHttpRequest();
+		//http.open('POST', url, true);
+		http.open('POST', url + '?_=' + new Date().getTime(), true); //add random value to end of URL to get around Safari iOS caching of results; is this good enough or do I need something more random?
+		http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		http.onreadystatechange = function() { //call function when the state changes
+			if(http.readyState == 4 && http.status == 200) {
+				markers.clearLayers(); //delete any existing crime markers so each map click generates a "fresh" set
+				//console.log(http.responseText);
+				var result = JSON.parse(http.responseText);
+				for(x = 0; x < Object.keys(result.features).length;x++){ //loop thru results
+					if (onlyAutoAndBurglary) { //only keep AUTO BURGLARY, AUTO THEFT, BURGLARY/BREAKING AND ENTERING
+						if (result.features[x].attributes.CVINC_TYPE == "AUTO BURGLARY" || result.features[x].attributes.CVINC_TYPE == "AUTO THEFT" || result.features[x].attributes.CVINC_TYPE == "BURGLARY/BREAKING AND ENTERING") {
+							xy = result.features[x].geometry;
+							console.log(result.features[x].geometry);
+							adate = new Date(result.features[x].attributes.date);
+							marker = L.marker([result.features[x].geometry.y,result.features[x].geometry.x]).bindPopup('<b>' + result.features[x].attributes.CVINC_TYPE + '</b><br>' + adate.toDateString()); //create crime marker and popup info
+							markers.addLayer(marker); //add marker to markers feature group
+						}
+					} else { //show all crimes (default onload)
+						xy = result.features[x].geometry;
+						console.log(result.features[x].geometry);
+						adate = new Date(result.features[x].attributes.date);
+						marker = L.marker([result.features[x].geometry.y,result.features[x].geometry.x]).bindPopup('<b>' + result.features[x].attributes.CVINC_TYPE + '</b><br>' + adate.toDateString()); //create crime marker and popup info
+						markers.addLayer(marker); //add marker to markers feature group
+					}
+				}
+				map.addLayer(markers); //add the feature group of crime markers to the map
+				map.fitBounds(markers.getBounds()); //zoom to bounds of crimes
+			}
+		}
+		http.send(params);
+	}
+	</script>
+</body>
+</html>

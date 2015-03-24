@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet geojson cluster example</title>
+	<meta charset="utf-8" />
+	<!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="Leaflet.markercluster-master/example/screen.css" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<link rel="stylesheet" href="Leaflet.markercluster-master/dist/MarkerCluster.css" />
+	<link rel="stylesheet" href="Leaflet.markercluster-master/dist/MarkerCluster.Default.css" />
+	<script src="Leaflet.markercluster-master/dist/leaflet.markercluster-src.js"></script>
+	<style>
+		body {padding:0;margin:0;background-color:black}
+		html, body {height:100%;width:100%;}
+	</style>
+
+</head>
+<body>
+	<div id="map" style="width:98%;height:98%"></div>
+    <script src="AA_Outdoor_Adventures.json" type="text/javascript"></script>
+	<script type="text/javascript">
+
+        //base layers you want to use
+        var esriNatGeoWorld = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
+			maxZoom: 16, //17 LODs
+			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+
+            esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
+			maxZoom: 18, //19 LODs
+			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+
+            esriUSATopos = L.tileLayer('http://server.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/{z}/{y}/{x}.png', {
+			maxZoom: 15, //16 LODs
+			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+
+            /*mapBox = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+            id: 'examples.map-i86knfo3',
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'© <a href="http://mapbox.com">Mapbox</a>'}),*/
+
+            osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 16, //17 LODs
+			attribution: 'Map data by &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'});
+            //Stamen has some cool basemaps too
+
+        //initialize the map
+		var map = L.map('map', {
+			center: [35.121, -106.616],
+			zoom: 7,
+			layers: [esriNatGeoWorld] //the default map layer
+		});
+
+        //add base layers and the map control
+		var baseLayers = {
+			"ESRI NatGeo": esriNatGeoWorld,
+			"ESRI Imagery": esriWorldImagery,
+			"ESRI Topos USA": esriUSATopos,
+            //"Mapbox": mapBox,
+            "OSM Mapnik": osmMapnik
+		};
+        L.control.layers(baseLayers).addTo(map);
+
+		var CampIcon = L.Icon.extend({
+			options: {
+                iconUrl: 'AA_Camps/tent.png',
+				iconSize:     [32, 37],
+				iconAnchor:   [16, 37], //adjust so tip of icon is at marker location
+				popupAnchor:  [0, -37] //where popup will open relative to icon anchor
+			}
+		});
+
+		var aCampIcon = new CampIcon();
+
+		//L.marker([35.121, -106.616], {icon: aCampIcon}).bindPopup("I am a camp icon.").addTo(map);
+        //var marker = L.marker([35.121, -106.616]).addTo(map); //test marker at coordinates Y,X; you want it to align with the icon
+
+        function popup(feature, layer) {
+            layer.on('click', function() {
+                if (feature.properties && feature.properties.Description && (map.getZoom() < 15)) {
+                    layer.bindPopup(feature.properties.Description + "<table id='smallStyle' width=100%><tr><td>&nbsp;<a href='javascript:map.setView([" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "],(map.getMaxZoom() - 1));map.closePopup();void(0);'>Zoom To Camp</a></td><td align=right><a href='javascript:map.eachLayer(function (layer){if (layer.options.maxZoom > 0){map.removeLayer(layer);}});map.addLayer(esriWorldImagery);map.setView([" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "],15);map.closePopup();void(0);'>(Zoom and switch to imagery)</a>&nbsp;&nbsp;</td></tr></table>");
+                } else {
+                    layer.bindPopup(feature.properties.Description);
+                }
+            });
+        }
+
+		var markers = L.markerClusterGroup();
+
+		var geoJsonLayer = L.geoJson(aaCamps, {
+            onEachFeature: popup,
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {icon: aCampIcon});
+            }
+		});
+		markers.addLayer(geoJsonLayer);
+
+		map.addLayer(markers);
+		map.fitBounds(markers.getBounds());
+
+        //if map is zoomed in farther than maxzoom of baselayer being switched to then zoom out to maxzoom of baselayer 
+        map.on('baselayerchange', function (eventLayer) {
+            if (map.getZoom() > eventLayer.layer.options.maxZoom) {
+                //alert("Map zoom level is " + map.getZoom() + ". Switching to " + eventLayer.name + " with maxzoom of " + eventLayer.layer.options.maxZoom + ".");
+                map.setZoom(eventLayer.layer.options.maxZoom);
+            }
+        });
+
+	</script>
+</body>
+</html>

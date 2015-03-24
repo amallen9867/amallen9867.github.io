@@ -1,0 +1,23 @@
+/*CSS style sheet for mobile stuff*/
+
+body
+{
+font-family:verdana, arial, sans serif;
+font-size:14pt;
+text-align:center;
+}
+
+input
+{
+font-family:verdana, arial, sans serif;
+font-size:14pt;
+text-align:center;
+}
+
+#gmInfoWindow
+{
+font-family:verdana, arial, sans serif;
+font-size:8pt;
+text-align:left;
+}
+

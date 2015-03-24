@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="x-ua-compatible" content="IE=edge"> <!--switch to this for IE 10 compatibility mode bullcrap-->
+    <!--<meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
+      on iOS devices-->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>About This Map</title>
+    <style type="text/css">
+        body
+        {
+            padding: 0px;
+            font-size: 12pt;
+            color: white;
+            font-family: Arial;
+            background-color: #6E6E6E;
+        }
+        
+        p
+        {
+            margin-left: 45px;
+        }
+
+        li
+        {
+            margin-left: 50px;
+        }
+
+        img
+        {
+            vertical-align: middle;
+        }
+
+        .margin {margin:5px;} 
+
+        .style1
+        {
+            color: #FFFF66;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+  <div class="Help" id="Help" style="Z-INDEX: 1000; LEFT: 3%; OVERFLOW: visible; WIDTH: 94%; POSITION: absolute; TOP: 20px; HEIGHT: 500px">
+    <h3><u>About This Map</u></h3>
+    <p>This web map displays crime data for the City of Albuquerque. Click (or tap) on the map to see crimes within half a mile of your click location. Data is for the last 180 days (roughly 6 months).</p><br>
+    <h3><u>Quick Tutorial</u></h3>
+    <p>The map starts with a view of Albuquerque. Clicking or tapping the map inside the city limits will zoom to and display crimes within half a mile of that location. Click on an individual crime marker to list the type of crime and when it occurred. I usually want to focus on three crimes: auto burglary, auto theft, burglary/breaking and entering. Click the checkbox in the bottom left if you only want to see those crimes. You can change the basemap via the icon in the top right. Press it to select from two different street basemaps or an aerials basemap.</p>
+    <center><img class="margin" src="ABQ_Crime_Map_Overview.png" alt="Map Example Image" border="0"></center><br>
+    <h3><u>Geek Stuff</u></h3>
+    <p>I did this web map for fun, as a proof of concept based on Paul Crickard's excellent blog post <a href="https://paulcrickard.wordpress.com/2015/02/09/query-albuquerque-open-data-with-turf-js/">Query Albuquerque Open Data with Turf.js</a>. Check it out if you are interested in what is going on behind the scenes. You can also visit the <a href="http://leafletjs.com/">Leaflet</a> and <a href="http://turfjs.org/">Turf</a> web sites for more info about these two great open source GIS resources.</p>
+    <p>More could be done to expand and improve this web map. I may or may not add to it in the future. Please remember it was done for fun rather than to build a fully featured app. Feel free to grab the code and build on it yourself!</p>
+    <br>
+    </div>
+</body>
+</html>

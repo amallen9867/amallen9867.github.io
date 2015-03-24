@@ -1,0 +1,186 @@
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="m_style.css" />
+    <title>AA's Camps</title>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <!--<script src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js" type="text/javascript"></script>-->
+    <script src="infobox.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    //<![CDATA[
+
+    //global variables (you might want to double-check these later)
+    var map;
+    var campMarker;
+    var campLatLng; //the lat lng values assigned to the marker
+    var boundingBox = new google.maps.LatLngBounds(); //so map can zoom to bounds of all points
+    //var campMarkerInfoWindow = new google.maps.InfoWindow;
+    var infoBoxText;
+    var infoBoxOptions = {
+       content: infoBoxText
+      ,pixelOffset: new google.maps.Size(-140, 0)                     
+      ,boxStyle: { 
+         background: "url('tipbox.gif') no-repeat"
+        ,opacity: 1.0
+        ,width: "260px"
+      }
+      ,closeBoxURL: ""
+      ,infoBoxClearance: new google.maps.Size(20, 75)
+      //,pixelOffset: new google.maps.Size(0, 0)
+      //,disableAutoPan: true
+    };
+    var campMarkerInfoWindow = new InfoBox(infoBoxOptions);
+
+    function initialize() {
+      //check if iPhone or Android phone and re-size map accordingly
+      var mapdiv = document.getElementById("map_canvas");
+      if (navigator.userAgent.indexOf('iPhone') != -1 || navigator.userAgent.indexOf('Android') != -1 ) {
+        mapdiv.style.width = '100%';
+        mapdiv.style.height = '100%';
+      } else {
+        mapdiv.style.width = '300px';
+        mapdiv.style.height = '350px';
+        //mapdiv.style.width = '100%';
+        //mapdiv.style.height = '100%';
+      }
+
+      //set up map and controls
+      map = new google.maps.Map(document.getElementById("map_canvas"), {
+        center: new google.maps.LatLng(34.5, -106.0),
+        zoom: 4,
+        navigationControl: true,
+        navigationControlOptions: {style: google.maps.NavigationControlStyle.ANDROID},
+        mapTypeControl: true,
+        mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      });
+
+      //process outages XML file and add markers to map
+      downloadUrl("AA_Outdoor_Adventures.xml", function(data) {
+        var xml = parseXml(data);
+        var browser = navigator.appVersion;
+        var campsTag = "fme:Camps";
+        var whereTag = "fme:Where";
+        var whoTag = "fme:Who";
+        var whenTag = "fme:When";
+        var whatTag = "fme:What";
+        var accuracyTag = "fme:Accuracy";
+        var yGeoTag = "fme:Y_Geo";
+        var xGeoTag = "fme:X_Geo";
+        if (browser.indexOf('Safari') != -1) { //Safari browser so strip out 'fme:' from tags
+          campsTag = campsTag.substr(4);
+          whereTag = whereTag.substr(4);
+          whoTag = whoTag.substr(4);
+          whenTag = whenTag.substr(4);
+          whatTag = whatTag.substr(4);
+          accuracyTag = accuracyTag.substr(4);
+          yGeoTag = yGeoTag.substr(4);
+          xGeoTag = xGeoTag.substr(4);
+          //alert(browser + "\nso " + campsTag);
+        } else { //all other browsers
+          //do nothing; keep tags fully intact
+          //alert(browser + "\nso " + campsTag);
+        }
+        var markers = xml.documentElement.getElementsByTagName(campsTag);
+        //alert("Total markers: " + markers.length);
+        for (var i = 0; i < markers.length; i++) {
+          var strWhere = markers[i].getElementsByTagName(whereTag)[0].firstChild.nodeValue;
+          var strWho = markers[i].getElementsByTagName(whoTag)[0].firstChild.nodeValue;
+          var strWhen = (markers[i].getElementsByTagName(whenTag)[0].firstChild.nodeValue);
+          //strWhen = strWhen.toString();
+          //some whatTag values are empty so check for these before populating variable to avoid an error
+          var strWhat;
+          if (markers[i].getElementsByTagName(whatTag)[0].hasChildNodes()) {
+            strWhat = markers[i].getElementsByTagName(whatTag)[0].firstChild.nodeValue;
+          } else {
+            //alert(strWhere + " is empty.");
+            strWhat = "&nbsp;";
+          }
+          var strAccuracy = markers[i].getElementsByTagName(accuracyTag)[0].firstChild.nodeValue;
+          campLatLng = new google.maps.LatLng(
+            parseFloat(markers[i].getElementsByTagName(yGeoTag)[0].firstChild.nodeValue),
+            parseFloat(markers[i].getElementsByTagName(xGeoTag)[0].firstChild.nodeValue)
+          );
+          boundingBox.extend(campLatLng); //add the lat lng to adjust the bounding box
+
+          var campIconImage;
+          campIconImage = new google.maps.MarkerImage("tent.png", null, null, new google.maps.Point(16,32));
+          /*if (parseInt(strWhere) == 0) { //zero outages
+            campIconImage = new google.maps.MarkerImage("http://www.pnm.com/customers/outage_map/images/map/zero_outages.png", null, null, new google.maps.Point(52,52));
+          } else { //otherwise use icons based on number of outages
+            if (parseInt(strWhere) < 50) { //less than 50 customers
+              campIconImage = new google.maps.MarkerImage("http://www.pnm.com/customers/outage_map/images/map/1_lightning_bolt.png", null, null, new google.maps.Point(14,14));
+            } else if (parseInt(strWhere) > 250) { //more than 250 customers
+              campIconImage = new google.maps.MarkerImage("http://www.pnm.com/customers/outage_map/images/map/3_lightning_bolts.png", null, null, new google.maps.Point(19,19));
+            } else { // 50 - 250 customers
+              campIconImage = new google.maps.MarkerImage("http://www.pnm.com/customers/outage_map/images/map/2_lightning_bolts.png", null, null, new google.maps.Point(16,16));
+            }
+          }*/
+          campMarker = new google.maps.Marker({
+            map: map,
+            position: campLatLng,
+            icon: campIconImage
+            //icon: icon.icon,
+            //shadow: icon.shadow
+          });
+          bindcampMarkerInfoWindow(campMarker, map, strWhere, strWho, strWhen, strWhat, strAccuracy);
+        }
+      });
+      alert(boundingBox.toUrlValue());
+      if (!(boundingBox.isEmpty())) {map.fitBounds(boundingBox);} //zoom to bounds of all points; some browsers are having an issue populating the bounding box
+
+    }
+
+    function bindcampMarkerInfoWindow(campMarker, map, strWhere, strWho, strWhen, strWhat, strAccuracy) {
+      google.maps.event.addListener(campMarker, 'click', function() {
+        campMarkerPosition = campMarker.position
+        campMarkerHTML = "<div><table id='gmInfoWindow' width=100% bgcolor='white'><tr><th colspan='2' align='center'>Details</th></tr><tr bgcolor='#E3E3F3'><th>Where</th><td>" + strWhere + "</td></tr><tr bgcolor='white'><th>Who</th><td>" + strWho + "</td></tr>" + "<tr bgcolor='#E3E3F3'><th>When</th><td>" + strWhen + "</td></tr>" + "<tr bgcolor='white'><th>What</th><td>" + strWhat + "<tr bgcolor='#E3E3F3'><th>Accuracy</th><td>" + strAccuracy + "</td></tr></table>" + "<table id='gmInfoWindow' width=100% bgcolor='white'><tr><td>&nbsp;&nbsp;<a href='javascript: map.setCenter(campMarkerPosition); map.setZoom(14); campMarkerInfoWindow.close();'>Zoom To Camp</a></td><td align=right><a href='javascript: campMarkerInfoWindow.close();'>Close</a>&nbsp;&nbsp;&nbsp;</td></tr></table></div>"; //this is all of the campMarkerHTML info but I need to figure out why it won't all display in my phone (but does in my PC web browser)
+        //campMarkerHTML = "<div><table id='gmInfoWindow'><tr><th colspan='2' align='center'>Outage Details</th></tr><tr bgcolor='#E3E3F3'><th>Customers Affected</th><td style='text-align:center'>" + strWhere + "</td></tr><tr bgcolor=''><th>Power Back On (Estimated)</th><td>" + strWho + "</td></tr></table>" + "<table id='gmInfoWindow' width=100%><tr><td>&nbsp;&nbsp;<a href='javascript: map.setCenter(campMarkerPosition); map.setZoom(14); campMarkerInfoWindow.close();'>Zoom To Outage</a></td><td align=right><a href='javascript: campMarkerInfoWindow.close();'>Close</a>&nbsp;&nbsp;&nbsp;</td></tr></table></div>";
+        infoBoxText = document.createElement("div");
+        infoBoxText.style.cssText = "border: 1px solid black; background: yellow; padding: 3px;";
+        infoBoxText.innerHTML = campMarkerHTML;
+        campMarkerInfoWindow.setContent(infoBoxText);
+        campMarkerInfoWindow.open(map, campMarker);
+        //map.panTo(campMarkerPosition); //what I really need to do is only move the marker and info box if they are too close to the edge of the map; that's a good way to accomodate both standard and mobile browsers; I might be able to do this in the infobox.js file
+      });
+    }
+
+    function downloadUrl(url, callback) { //download outages xml file (even though it's local)
+
+      var request = window.ActiveXObject ?
+        new ActiveXObject('Microsoft.XMLHTTP') :
+        new XMLHttpRequest;
+
+      request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+          request.onreadystatechange = doNothing;
+          callback(request.responseText, request.status);
+        }
+      };
+      //alert(request.status);
+      request.open('GET', url, true);
+      request.send(null);
+    }
+
+    function parseXml(str) { //parse outages xml data
+      if (window.ActiveXObject) {
+        var doc = new ActiveXObject('Microsoft.XMLDOM');
+        doc.loadXML(str);
+        return doc;
+      } else if (window.DOMParser) {
+        return (new DOMParser).parseFromString(str, 'text/xml');
+      }
+    }
+
+    function doNothing() {} //used in downloadUrl() function above
+
+    //]]>
+
+  </script>
+  </head>
+  <body style="margin:0px 0px" onload="initialize()">
+    <!--<div id="map_canvas" style="width:100px; height:100px"></div>-->
+    <div id="map_canvas"></div>
+  </body>
+</html>

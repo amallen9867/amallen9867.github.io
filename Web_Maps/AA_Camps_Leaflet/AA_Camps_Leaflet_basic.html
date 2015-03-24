@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My Camps - Leaflet</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+</head>
+<body>
+	<div id="map" style="width: 800px; height: 600px"></div>
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="AA_Outdoor_Adventures.json" type="text/javascript"></script>
+	<script>
+
+        //base layers you want to use
+        var esriNatGeoWorld = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
+			maxZoom: 18,
+			attribution: 'Map data by&copy; <a href="http://www.esri.com">ESRI</a>'}),
+
+            esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
+			maxZoom: 18,
+			attribution: 'Map data by&copy; <a href="http://www.esri.com">ESRI</a>'}),
+
+            mapBox = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+            id: 'examples.map-i86knfo3',
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'© <a href="http://mapbox.com">Mapbox</a>'}),
+
+            osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data by&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'});
+
+        //initialize the map
+		var map = L.map('map', {
+			center: [35.121, -106.616],
+			zoom: 7,
+			layers: [esriNatGeoWorld] //the default map layer
+		});
+
+        //add base layers and the map control
+		var baseLayers = {
+			"ESRI NatGeo": esriNatGeoWorld,
+			"ESRI Imagery": esriWorldImagery,
+            "Mapbox": mapBox,
+            "OSM Mapnik": osmMapnik
+		};
+        L.control.layers(baseLayers).addTo(map);
+
+		var CampIcon = L.Icon.extend({
+			options: {
+                iconUrl: 'AA_Camps/tent.png',
+				iconSize:     [32, 37],
+				iconAnchor:   [16, 37], //adjust so tip of icon is at marker location
+				popupAnchor:  [0, -37] //where popup will open relative to icon anchor
+			}
+		});
+
+		var aCampIcon = new CampIcon();
+
+		//L.marker([35.121, -106.616], {icon: aCampIcon}).bindPopup("I am a camp icon.").addTo(map);
+        //var marker = L.marker([35.121, -106.616]).addTo(map); //test marker at coordinates Y,X; you want it to align with the icon
+
+        function popup(feature, layer) {
+            if (feature.properties && feature.properties.Description) {
+                layer.bindPopup(feature.properties.Description + "<table id='smallStyle' width=100%><tr><td>&nbsp;<a href='javascript:map.setView([" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "],17);'>Zoom To Camp</a></td><td align=right><a href='javascript: map.closePopup();'>Close</a>&nbsp;&nbsp;</td></tr></table>");
+            }
+        }
+
+        L.geoJson(aaCamps, {
+            onEachFeature: popup,
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {icon: aCampIcon});
+            }
+        }).addTo(map);
+
+	</script>
+</body>
+</html>

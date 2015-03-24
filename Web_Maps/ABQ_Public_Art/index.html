@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ABQ Public Art</title>
+	<meta charset=utf-8 name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css' rel='stylesheet' />
+	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet' />
+	<link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' />
+<style>
+	body { margin:0; padding:0; }
+	.map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+</head>
+<body>
+<div id='map-canvas' class='map'> </div>
+<script src="ABQ_Public_Art_via_JSON.geojson" type="text/javascript"></script>
+<script>
+L.mapbox.accessToken = 'pk.eyJ1IjoiYW1hbGxlbiIsImEiOiJMODZWV2YwIn0.JNlDT5QDisjUkjb5_oIQ6A';
+var map = L.mapbox.map('map-canvas', 'amallen.kakjnpi2', {maxZoom: 18, legendControl:{position:'topright'}})
+	.setView([35.107,-106.627], 6);
+
+var strZoomToLocation;
+var notClickedYet = 1; //initialize boolean to fire click event the first time
+function popup(feature, layer) {
+	layer.on('click', function() {
+		if (feature.properties) {
+			if (map.getZoom() < 18) {
+				strZoomToLocation = "<a href='javascript:map.setView([" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "],18);map.closePopup();void(0);'>Zoom To Location</a>";
+			} else {
+				strZoomToLocation = "&nbsp;";
+			}
+			layer.bindPopup("<table width='250px'><tr><td style='text-align:center' colspan='2' height='240'><img style='max-width:250px; max-height:240px;' src='" + feature.properties.JPG_URL + "'alt='Photo'></td></tr><tr><td colspan='2'><a href='" + feature.properties.IMAGE_URL + "' target='_blank'>View larger photo in new tab</a></td></tr><tr bgcolor='#E3E3F3'><td>Title</td><td style='text-align:left'>" + feature.properties.TITLE + "</td></tr><tr><td>Artist</td><td style='text-align:left'>" + feature.properties.ARTIST + "</td></tr><tr bgcolor='#E3E3F3'><td>Year</td><td>" + feature.properties.YEAR + "</td></tr></table>" + "<table width=100%><tr><td>&nbsp;" + strZoomToLocation + "</td><td align=right><a href='javascript: map.closePopup();'>Close</a>&nbsp;&nbsp;</td></tr></table>");
+		}
+	});
+	if (notClickedYet) {layer.fire('click');}; //firing the click event here in order to bind initial popup content; otherwise the user has to click the marker twice to see popup info the first time
+}
+
+var markers = L.markerClusterGroup();
+var geoJsonLayer = L.geoJson(abqPublicArtLocations, {
+	onEachFeature: popup,
+	pointToLayer: function (feature, latlng) {
+		return L.marker(latlng, {icon: L.mapbox.marker.icon({'marker-symbol': 'art-gallery', 'marker-size': 'medium', 'marker-color': '191970'})});
+	}
+});
+markers.addLayer(geoJsonLayer);
+map.addLayer(markers);
+map.fitBounds(markers.getBounds());
+map.legendControl.addLegend('<strong>ABQ Public Art</strong>');
+notClickedYet = 0; //clear boolean to fire click event
+
+map.on('popupopen', function(e) {
+    var px = map.project(e.popup._latlng); // find the pixel location on the map where the popup anchor is
+    px.y -= e.popup._container.clientHeight/2 // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
+    map.panTo(map.unproject(px),{animate: true}); // pan to new center
+});
+
+</script>
+</body>
+</html>
