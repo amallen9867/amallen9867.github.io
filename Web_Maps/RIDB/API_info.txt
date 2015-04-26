@@ -1,0 +1,6 @@
+my API Key: C6FD431461184F229360D0A58F71D6D0
+*Get your own API key for free at https://ridb.recreation.gov/?action=register
+*Note: a maximum of 50 records can be returned at a time (WTF?)
+
+URL to recreation areas, returned as JSON: https://ridb.recreation.gov/api/v1/recareas.json?apikey=C6FD431461184F229360D0A58F71D6D0
+URL to facilities, returned as JSON: https://ridb.recreation.gov/api/v1/facilities.json?apikey=C6FD431461184F229360D0A58F71D6D0
