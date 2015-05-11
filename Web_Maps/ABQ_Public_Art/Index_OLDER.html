@@ -31,7 +31,7 @@ function popup(feature, layer) {
 			} else {
 				strZoomToLocation = "&nbsp;";
 			}
-			layer.bindPopup("<table width='250px'><tr><td style='text-align:center' colspan='2' height='240'><img style='max-width:250px; max-height:240px;' src='" + feature.properties.JPG_URL + "'alt='Photo'></td></tr><tr><td colspan='2'><a href='" + feature.properties.IMAGE_URL + "' target='_blank'>View larger photo in new tab</a></td></tr><tr bgcolor='#E3E3F3'><td>Title</td><td style='text-align:left'>" + feature.properties.TITLE + "</td></tr><tr><td>Artist</td><td style='text-align:left'>" + feature.properties.ARTIST + "</td></tr><tr bgcolor='#E3E3F3'><td>Year</td><td>" + feature.properties.YEAR + "</td></tr></table>" + "<table width=100%><tr><td>&nbsp;" + strZoomToLocation + "</td><td align=right><a href='javascript: map.closePopup();'>Close</a>&nbsp;&nbsp;</td></tr></table>");
+			layer.bindPopup("<img src='" + feature.properties.JPG_URL + "'alt='Photo' width='275px'><a href='" + feature.properties.IMAGE_URL + "' target='_blank'>View larger photo in new tab</a><table width='100%'><tr bgcolor='#E3E3F3'><td>Title</td><td style='text-align:left'>" + feature.properties.TITLE + "</td></tr><tr><td>Artist</td><td style='text-align:left'>" + feature.properties.ARTIST + "</td></tr><tr bgcolor='#E3E3F3'><td>Year</td><td>" + feature.properties.YEAR + "</td></tr></table>" + "<table width=100%><tr><td>&nbsp;" + strZoomToLocation + "</td><td align=right><a href='javascript: map.closePopup();'>Close</a>&nbsp;&nbsp;</td></tr></table>");
 		}
 	});
 	if (notClickedYet) {layer.fire('click');}; //firing the click event here in order to bind initial popup content; otherwise the user has to click the marker twice to see popup info the first time
@@ -55,7 +55,6 @@ map.on('popupopen', function(e) {
     px.y -= e.popup._container.clientHeight/2 // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
     map.panTo(map.unproject(px),{animate: true}); // pan to new center
 });
-
 </script>
 </body>
 </html>
