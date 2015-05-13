@@ -108,7 +108,7 @@
 		if (!bIsSearchInProgress) {
 			bIsSearchInProgress = true;
 			searching.addTo(map); //add searching control to map
-			if (clickMarker) {map.removeLayer(clickMarker)}; //remove previous marker from map
+			if (clickMarker) {map.removeLayer(clickMarker)}; //remove previous click marker from map
 			clickMarker = L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'thumb-tack', prefix: 'fa', markerColor: 'darkred'}) }).addTo(map)
 				.bindPopup("You clicked here.");
 			mouseY = e.latlng.lat;
@@ -145,7 +145,7 @@
 				}
 				if (Object.keys(result.RECDATA).length > 0) {
 					map.addLayer(markers); //add the feature group of markers to the map
-					markers.addLayer(clickMarker); //add clickMarker to markers feature group
+					if (clickMarker) {markers.addLayer(clickMarker)}; //add clickMarker to markers feature group if it exists
 					map.fitBounds(markers.getBounds()); //zoom to bounds of markers
 					searching.removeFrom(map); //remove (hide) searching control
 					bIsSearchInProgress = false;
