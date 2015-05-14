@@ -26,13 +26,13 @@
 		}
 
 	</style>
-    <title>Camping</title>
+    <title>Fed Camping</title>
 	<script type="text/javascript">
 	</script>
 </head>
 <body>
 	<div id='map' style='width:100%;height:100%'>
-		<div id='map_title'>Camping</div>
+		<div id='map_title'>Fed Camping</div>
 	</div>
 	<script type="text/javascript">
 //***other stuff to do:
@@ -98,6 +98,10 @@
 		this._div.innerHTML = sSearchingText;
 	};
 
+	//initialize geolocation marker and boolean when loading app
+	var geolocationMarker;
+	var justLoaded = true; //boolean to group geolocationMarker with camp markers or not
+
 	//get XY from map click
 	//create variables outside function so they get refreshed/re-used with each click
 	//var geojsonPoint;
@@ -145,6 +149,7 @@
 				}
 				if (Object.keys(result.RECDATA).length > 0) {
 					map.addLayer(markers); //add the feature group of markers to the map
+					if (geolocationMarker && justLoaded) {markers.addLayer(geolocationMarker)}; //add geolocationMarker to markers feature group if it exists and the app just loaded/refreshed
 					if (clickMarker) {markers.addLayer(clickMarker)}; //add clickMarker to markers feature group if it exists
 					map.fitBounds(markers.getBounds()); //zoom to bounds of markers
 					searching.removeFrom(map); //remove (hide) searching control
@@ -157,13 +162,14 @@
 			}
 		}
 		http.send(params);
+		justLoaded = false; //clear boolean tied to geolocation marker
 	}
 
 	//get current location if possible
 	function onLocationFound(e) {
 		var radius = e.accuracy / 2;
 		//L.marker(e.latlng).addTo(map)
-		L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'bullseye', prefix: 'fa', markerColor: 'orange'}) }).addTo(map)
+		geolocationMarker = L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'bullseye', prefix: 'fa', markerColor: 'orange'}) }).addTo(map)
 			//.bindPopup("You are within " + radius + " meters from this point").openPopup();
 			.bindPopup("Your current location.").openPopup();
 		//L.circle(e.latlng, radius).addTo(map); //circle around marker
