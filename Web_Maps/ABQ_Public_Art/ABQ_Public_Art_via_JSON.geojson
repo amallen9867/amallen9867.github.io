@@ -13877,7 +13877,7 @@ var abqPublicArtLocations = {
 			"LOCATION": "Central Roadway",
 			"X": -106.5937178,
 			"Y": 35.07886974,
-			"IMAGE_URL": "www.flickr.com/photos/abqpublicart/7796322054",
+			"IMAGE_URL": "http://www.flickr.com/photos/abqpublicart/7796322054",
 			"JPG_URL": "http://farm8.staticflickr.com/7276/7796322054_93d917dfd6_m.jpg"
 		},
 		"geometry": {
