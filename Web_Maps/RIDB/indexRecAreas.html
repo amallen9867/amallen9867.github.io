@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="x-ua-compatible" content="IE=edge"> <!--switch to this for IE 10 compatibility mode bullcrap-->
+    <!--<meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
+      on iOS devices-->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+	<style>
+		body {padding:0;margin:0;background-color:black;}
+		html, body {height:100%;width:100%;}
+		#map_title {position:relative;text-align:center;font-family:verdana, arial, sans serif; font-size:11pt;background-color:cornsilk;border-style:solid;border-width:1px;height:22px;width:125px;margin:0 auto;z-index:99;}
+
+		.searching {
+			padding: 6px 8px;
+			font: 14px/16px Arial, Helvetica, sans-serif;
+			background: white;
+			background: rgba(255,255,255,0.8);
+			box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			border-radius: 5px;
+		}
+
+	</style>
+    <title>Fed Camping</title>
+	<script type="text/javascript">
+	</script>
+</head>
+<body>
+	<div id='map' style='width:100%;height:100%'>
+		<div id='map_title'>Fed Camping</div>
+	</div>
+	<script type="text/javascript">
+//***other stuff to do:
+//let user know if no results or more than 50 results
+//marker clustering for points right on top of each other
+//user input for distance to search, type of camp
+//driving directions?
+//click to zoom to camp from popup
+//zoom in beyond level 17 for ESRI basemaps and automatically zoom back out to max zoom of OSM
+
+	strAboutThisMap = ' | <a href="AboutThisMap.html">About this map</a>'
+	//base layers
+	var esriWorldStreetMap = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png', {
+		maxZoom: 17, //20 LODs
+		attribution: 'Basemap &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
+
+		esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
+		maxZoom: 17, //20 LODs
+		attribution: 'Basemap &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
+
+		osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 17, //17 LODs
+		attribution: 'Basemap &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>' + strAboutThisMap});
+		//Stamen has some cool basemaps too
+
+	//initialize the map
+	var map = L.map('map', {
+		center: [39.2, -96.5],
+		zoom: 5,
+		layers: [osmMapnik] //the default basemap
+	});
+
+	//add base layers and the map control
+	var baseLayers = {
+		"OpenStreetMap": osmMapnik,
+		"ESRI Streets": esriWorldStreetMap,
+		"ESRI Imagery": esriWorldImagery
+	};
+	L.control.layers(baseLayers).addTo(map);
+
+	//polygon to represent U.S. extent
+	var polygon = L.polygon([
+		[24.5, -66.5],
+		[24.5, -124.8],
+		[49.2, -124.8],
+		[49.2, -66.5]
+	])
+	//polygon.addTo(map); //visually confirm extent is correct (just for testing)
+
+	//initialize "Searching..." control and some other stuff for when user clicks on map
+	var searching = L.control();
+	var sSearchingText;
+	var bIsSearchInProgress = false;
+
+	searching.onAdd = function (map) {
+		this._div = L.DomUtil.create('div', 'searching'); // create a div with a class "searching"
+		this._div.innerHTML = 'Searching...';
+		//this.update();
+		return this._div;
+	};
+
+	searching.update = function () {
+		this._div.innerHTML = sSearchingText;
+	};
+
+	//initialize geolocation marker and boolean when loading app
+	var geolocationMarker;
+	var justLoaded = true; //boolean to group geolocationMarker with camp markers or not
+
+	//get XY from map click
+	//create variables outside function so they get refreshed/re-used with each click
+	//var geojsonPoint;
+	var clickMarker;
+	var mouseY;
+	var mouseX;
+	map.on('click', function(e){
+		if (!bIsSearchInProgress) {
+			bIsSearchInProgress = true;
+			searching.addTo(map); //add searching control to map
+			if (clickMarker) {map.removeLayer(clickMarker)}; //remove previous click marker from map
+			clickMarker = L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'thumb-tack', prefix: 'fa', markerColor: 'darkred'}), zIndexOffset: 999 }).addTo(map)
+				.bindPopup("You clicked here.");
+			mouseY = e.latlng.lat;
+			mouseX = e.latlng.lng;
+			GetCamps();
+		} else {
+			//do nothing
+		}
+	});
+
+	var markers = new L.FeatureGroup(); //create variable outside function so markers get refreshed with each click
+	function GetCamps(){
+		//*Please get your own API key (it's free!) at https://ridb.recreation.gov/?action=register
+		var params = '.json?apikey=C6FD431461184F229360D0A58F71D6D0'; //requesting JSON format and providing API key
+		var url = 'https://ridb.recreation.gov/api/v1/recareas';
+		//console.log(params);
+		http=new XMLHttpRequest();
+		http.open('GET', url + '.json?apikey=C6FD431461184F229360D0A58F71D6D0&limit=50&activity=9&org=-1&latitude=' + mouseY + '&longitude=' + mouseX + '&radius=30&' + new Date().getTime(), true); //add random value to end of URL to get around Safari iOS caching of results
+		//Notes: activity=9 is camping (although some are only day use); some org IDs: 126=BLM, 128=NPS, 131=USDA Forest Service, -1=All
+		http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		http.onreadystatechange = function() { //call function when the state changes
+			if(http.readyState == 4 && http.status == 200) {
+				markers.clearLayers(); //delete current markers so each map click generates a new set
+				console.log(http.responseText);
+				var result = JSON.parse(http.responseText);
+				//alert("Records returned = " + Object.keys(result.RECDATA).length);
+				for(x = 0; x < Object.keys(result.RECDATA).length; x++){ //loop thru results
+					if (!((result.RECDATA[x].RecAreaLatitude=='')) || !((result.RECDATA[x].RecAreaLongitude==''))) { //drop records where xys are not populated
+						//xy = result.features[x].geometry;
+						//console.log(result.features[x].geometry);
+						marker = L.marker([result.RECDATA[x].RecAreaLatitude,result.RECDATA[x].RecAreaLongitude]).bindPopup("<a href='http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&recAreaId=" + result.RECDATA[x].RecAreaID + "' target='_blank'>" + result.RECDATA[x].RecAreaName + "</a>"); //create marker and popup info
+						markers.addLayer(marker); //add marker to markers feature group
+					}
+				}
+				if (Object.keys(result.RECDATA).length > 0) {
+					map.addLayer(markers); //add the feature group of markers to the map
+					if (geolocationMarker && justLoaded) {markers.addLayer(geolocationMarker)}; //add geolocationMarker to markers feature group if it exists and the app just loaded/refreshed
+					if (clickMarker) {markers.addLayer(clickMarker)}; //add clickMarker to markers feature group if it exists
+					map.fitBounds(markers.getBounds()); //zoom to bounds of markers
+					searching.removeFrom(map); //remove (hide) searching control
+					bIsSearchInProgress = false;
+				} else {
+					sSearchingText = "No campgrounds found";
+					searching.update(sSearchingText);
+					setTimeout(function() {searching.removeFrom(map);bIsSearchInProgress = false;},2000);
+				}
+			}
+		}
+		http.send(params);
+		justLoaded = false; //clear boolean tied to geolocation marker
+	}
+
+	//get current location if possible
+	function onLocationFound(e) {
+		var radius = e.accuracy / 2;
+		//L.marker(e.latlng).addTo(map)
+		geolocationMarker = L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'bullseye', prefix: 'fa', markerColor: 'orange'}), zIndexOffset: 998 }).addTo(map)
+			//.bindPopup("You are within " + radius + " meters from this point").openPopup();
+			.bindPopup("Your current location.").openPopup();
+		//L.circle(e.latlng, radius).addTo(map); //circle around marker
+		mouseY = e.latlng.lat;
+		mouseX = e.latlng.lng;
+		GetCamps();
+	}
+
+	function onLocationError(e) {
+		alert(e.message);
+		map.fitBounds(polygon.getBounds()); //zoom to bounds of U.S. rather than use fixed zoom; works better for devices of different sizes
+	}
+
+	map.on('locationfound', onLocationFound);
+	map.on('locationerror', onLocationError);
+	map.locate({setView: true, maxZoom: 16});
+
+	</script>
+</body>
+</html>
