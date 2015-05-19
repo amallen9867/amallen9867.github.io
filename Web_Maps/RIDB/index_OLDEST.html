@@ -26,20 +26,21 @@
 		}
 
 	</style>
-    <title>Fed Camping</title>
+    <title>Campgrounds</title>
 	<script type="text/javascript">
 	</script>
 </head>
 <body>
 	<div id='map' style='width:100%;height:100%'>
-		<div id='map_title'>Fed Camping</div>
+		<div id='map_title'>Campgrounds</div>
 	</div>
 	<script type="text/javascript">
 //***other stuff to do:
+//find camps at current location
+//"Searching..." while searching for camps
 //let user know if no results or more than 50 results
 //marker clustering for points right on top of each other
 //user input for distance to search, type of camp
-//driving directions?
 //click to zoom to camp from popup
 //zoom in beyond level 17 for ESRI basemaps and automatically zoom back out to max zoom of OSM
 
@@ -98,118 +99,79 @@
 		this._div.innerHTML = sSearchingText;
 	};
 
-	//initialize geolocation marker and boolean when loading app
-	var geolocationMarker;
-	var justLoaded = true; //boolean to group geolocationMarker with camp markers or not
-
 	//get XY from map click
 	//create variables outside function so they get refreshed/re-used with each click
 	//var geojsonPoint;
-	var clickMarker;
+	var leafletMarker;
 	var mouseY;
 	var mouseX;
 	map.on('click', function(e){
 		if (!bIsSearchInProgress) {
 			bIsSearchInProgress = true;
 			searching.addTo(map); //add searching control to map
-			if (clickMarker) {map.removeLayer(clickMarker)}; //remove previous click marker from map
-			clickMarker = L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'thumb-tack', prefix: 'fa', markerColor: 'darkred'}), zIndexOffset: 999 }).addTo(map)
-				.bindPopup("You clicked here.");
+			if (leafletMarker) {map.removeLayer(leafletMarker)}; //remove previous marker from map
+			leafletMarker = L.marker(e.latlng);
 			mouseY = e.latlng.lat;
 			mouseX = e.latlng.lng;
-			ProcessUrls();
+			//alert(e.latlng);
+			//leafletMarker = L.marker(e.latlng,{icon: aCampIcon}).bindPopup("You clicked the map here.").addTo(map);
+			//geojsonPoint = leafletMarker.toGeoJSON();
+			//GetCamps(geojsonPoint);
+			GetCamps();
 		} else {
 			//do nothing
 		}
 	});
 
 	var markers = new L.FeatureGroup(); //create variable outside function so markers get refreshed with each click
-
-	function ProcessUrls() {
-		markers.clearLayers(); //delete current markers so each map click generates a new set
-		ridbRequests = new Array();
-		var urls = new Array('https://ridb.recreation.gov/api/v1/facilities','https://ridb.recreation.gov/api/v1/recareas');
-		for(i=0;i<urls.length;i++) {
-			ridbRequests.push(new GetCamps(urls[i]));  
-		}
-	}
-
-	function GetCamps(url){
+	function GetCamps(){
 		//*Please get your own API key (it's free!) at https://ridb.recreation.gov/?action=register
 		var params = '.json?apikey=C6FD431461184F229360D0A58F71D6D0'; //requesting JSON format and providing API key
-		//var url = 'https://ridb.recreation.gov/api/v1/facilities';
+		var url = 'https://ridb.recreation.gov/api/v1/facilities';
 		//console.log(params);
-		var http = new XMLHttpRequest();
-		http.open('GET', url + '.json?apikey=C6FD431461184F229360D0A58F71D6D0&limit=50&activity=9&org=-1&latitude=' + mouseY + '&longitude=' + mouseX + '&radius=30&' + new Date().getTime(), true); //add random value to end of URL to get around Safari iOS caching of results
-		//Notes: activity=9 is camping (although some are only day use); some org IDs: 126=BLM, 128=NPS, 131=USDA Forest Service, -1=All
+		http=new XMLHttpRequest();
+		http.open('GET', url + '.json?apikey=C6FD431461184F229360D0A58F71D6D0&limit=50&activity=9&org=131,137,138&latitude=' + mouseY + '&longitude=' + mouseX + '&radius=30&' + new Date().getTime(), true); //add random value to end of URL to get around Safari iOS caching of results
 		http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 		http.onreadystatechange = function() { //call function when the state changes
 			if(http.readyState == 4 && http.status == 200) {
-				//markers.clearLayers(); //delete current markers so each map click generates a new set
+				markers.clearLayers(); //delete current markers so each map click generates a new set
 				console.log(http.responseText);
 				var result = JSON.parse(http.responseText);
 				//alert("Records returned = " + Object.keys(result.RECDATA).length);
-				posLastSlash = url.lastIndexOf("\/");
-				endpointName = url.substring(posLastSlash+1,url.length);
-				alert(endpointName);
-				if (endpointName == "facilities") { //process facility results
-					for(x = 0; x < Object.keys(result.RECDATA).length; x++){ //loop thru results results for FACILITIES
-						if (!((result.RECDATA[x].FacilityLatitude=='')) || !((result.RECDATA[x].FacilityLongitude==''))) { //drop records where xys are not populated
-							//xy = result.features[x].geometry;
-							//console.log(result.features[x].geometry);
-							if (result.RECDATA[x].LegacyFacilityID) { //tweak URL for campgrounds that have a LegacyFacilityID and use parkID in URL
-								facilityName = result.RECDATA[x].FacilityName;
-								posFirstSpace = facilityName.indexOf(" "); //get position of first space
-								facilityNameTweaked = facilityName.substring(0,posFirstSpace) + "-" + facilityName.substring(posFirstSpace+1,facilityName.length); //replace first space with a dash in facility name
-								recGovURL = "http://www.recreation.gov/camping/" + facilityNameTweaked + "/r/campgroundDetails.do?contractCode=NRSO&parkId=" + result.RECDATA[x].LegacyFacilityID; //assemble recreation.gov URL
-							} else {
-								recGovURL = "http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&facilityId=" + result.RECDATA[x].FacilityID; //assemble recreation.gov URL
-							}
-							marker = L.marker([result.RECDATA[x].FacilityLatitude,result.RECDATA[x].FacilityLongitude]).bindPopup("<a href='" + recGovURL + "' target='_blank'>" + result.RECDATA[x].FacilityName + "</a>"); //create marker and popup info
-							markers.addLayer(marker); //add marker to markers feature group
-						}
+				for(x = 0; x < Object.keys(result.RECDATA).length; x++){ //loop thru results
+					if (!((result.RECDATA[x].FacilityLatitude=='')) && !((result.RECDATA[x].FacilityLongitude==''))) { //drop records where xys are not populated
+						//xy = result.features[x].geometry;
+						//console.log(result.features[x].geometry);
+						marker = L.marker([result.RECDATA[x].FacilityLatitude,result.RECDATA[x].FacilityLongitude]).bindPopup('<b>' + result.RECDATA[x].FacilityName + '</b>'); //create marker and popup info
+						markers.addLayer(marker); //add marker to markers feature group
 					}
-				} else if (endpointName == "recareas") { //process recarea results
-					for(x = 0; x < Object.keys(result.RECDATA).length; x++){ //loop thru results
-						if (!((result.RECDATA[x].RecAreaLatitude=='')) || !((result.RECDATA[x].RecAreaLongitude==''))) { //drop records where xys are not populated
-							//xy = result.features[x].geometry;
-							//console.log(result.features[x].geometry);
-							marker = L.marker([result.RECDATA[x].RecAreaLatitude,result.RECDATA[x].RecAreaLongitude]).bindPopup("<a href='http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&recAreaId=" + result.RECDATA[x].RecAreaID + "' target='_blank'>" + result.RECDATA[x].RecAreaName + "</a>"); //create marker and popup info
-							markers.addLayer(marker); //add marker to markers feature group
-						}
-					}
-				} else {
-					//nada - place holder for now
 				}
 				if (Object.keys(result.RECDATA).length > 0) {
 					map.addLayer(markers); //add the feature group of markers to the map
-					if (geolocationMarker && justLoaded) {markers.addLayer(geolocationMarker)}; //add geolocationMarker to markers feature group if it exists and the app just loaded/refreshed
-					if (clickMarker) {markers.addLayer(clickMarker)}; //add clickMarker to markers feature group if it exists
 					map.fitBounds(markers.getBounds()); //zoom to bounds of markers
 					searching.removeFrom(map); //remove (hide) searching control
 					bIsSearchInProgress = false;
 				} else {
 					sSearchingText = "No campgrounds found";
 					searching.update(sSearchingText);
-					//setTimeout(function() {searching.removeFrom(map);bIsSearchInProgress = false;},2000);
+					setTimeout(function() {searching.removeFrom(map);bIsSearchInProgress = false;},2000);
 				}
 			}
 		}
 		http.send(params);
-		justLoaded = false; //clear boolean tied to geolocation marker
 	}
 
 	//get current location if possible
 	function onLocationFound(e) {
 		var radius = e.accuracy / 2;
 		//L.marker(e.latlng).addTo(map)
-		geolocationMarker = L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'bullseye', prefix: 'fa', markerColor: 'orange'}), zIndexOffset: 998 }).addTo(map)
+		L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'info', prefix: 'fa', markerColor: 'orange'}) }).addTo(map)
 			//.bindPopup("You are within " + radius + " meters from this point").openPopup();
 			.bindPopup("Your current location.").openPopup();
 		//L.circle(e.latlng, radius).addTo(map); //circle around marker
 		mouseY = e.latlng.lat;
 		mouseX = e.latlng.lng;
-		ProcessUrls();
+		GetCamps();
 	}
 
 	function onLocationError(e) {
