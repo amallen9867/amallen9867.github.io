@@ -14,7 +14,7 @@
 	<style>
 		body {padding:0;margin:0;background-color:black;}
 		html, body {height:100%;width:100%;}
-		#map_title {position:relative;text-align:center;font-family:verdana, arial, sans serif; font-size:11pt;background-color:cornsilk;border-style:solid;border-width:1px;height:22px;width:125px;margin:0 auto;z-index:99;}
+		#map_title {position:relative;text-align:center;font-family:verdana, arial, sans serif; font-size:11pt;background-color:cornsilk;border-style:solid;border-width:1px;height:22px;width:101px;margin:0 auto;z-index:99;}
 
 		.searching {
 			padding: 6px 8px;
@@ -36,25 +36,30 @@
 	</div>
 	<script type="text/javascript">
 //***other stuff to do:
-//let user know if more than 50 results?
-//marker clustering for points right on top of each other
-//user input for distance to search, type of camp
-//driving directions?
+//put together "About this map" file
+//add camping icon
 //click to zoom to camp from popup
-//zoom in beyond level 17 for ESRI basemaps and automatically zoom back out to max zoom of OSM
+//let user know if more than 50 results?
+//marker clustering for points right on top of each other?
+//user input for distance to search?
+//driving directions?
 
 	strAboutThisMap = ' | <a href="AboutThisMap.html">About this map</a>'
 	//base layers
-	var esriWorldStreetMap = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png', {
-		maxZoom: 17, //20 LODs
-		attribution: 'Basemap &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
+	var esriNatGeoWorld = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
+		maxZoom: 16, //17 LODs
+		attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
 
 		esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
-		maxZoom: 17, //20 LODs
+		maxZoom: 19, //20 LODs
 		attribution: 'Basemap &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
 
+		esriUSATopos = L.tileLayer('http://server.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/{z}/{y}/{x}.png', {
+		maxZoom: 15, //16 LODs
+		attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
+
 		osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		maxZoom: 17, //17 LODs
+		maxZoom: 16, //17 LODs
 		attribution: 'Basemap &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>' + strAboutThisMap});
 		//Stamen has some cool basemaps too
 
@@ -62,14 +67,15 @@
 	var map = L.map('map', {
 		center: [39.2, -96.5],
 		zoom: 5,
-		layers: [osmMapnik] //the default basemap
+		layers: [esriNatGeoWorld] //the default basemap
 	});
 
 	//add base layers and the map control
 	var baseLayers = {
-		"OpenStreetMap": osmMapnik,
-		"ESRI Streets": esriWorldStreetMap,
-		"ESRI Imagery": esriWorldImagery
+		"Roads (ESRI)": esriNatGeoWorld,
+		"Imagery (ESRI)": esriWorldImagery,
+		"Topos (ESRI)": esriUSATopos,
+		"OpenStreetMap": osmMapnik
 	};
 	L.control.layers(baseLayers).addTo(map);
 
@@ -217,9 +223,19 @@
 	}
 
 	function onLocationError(e) {
-		alert(e.message);
+		//alert(e.message);
+		alert("Geolocation blocked or not found.");
 		map.fitBounds(polygon.getBounds()); //zoom to bounds of U.S. rather than use fixed zoom; works better for devices of different sizes
 	}
+
+	//if map is zoomed in farther than maxzoom of baselayer being switched to then zoom out to maxzoom of baselayer 
+	map.on('baselayerchange', function (eventLayer) {
+		if (map.getZoom() > eventLayer.layer.options.maxZoom) {
+			//alert("Map zoom level is " + map.getZoom() + ". Switching to " + eventLayer.name + " with maxzoom of " + eventLayer.layer.options.maxZoom + ".");
+			//map.setZoom(eventLayer.layer.options.maxZoom);
+			setTimeout(function() {map.setZoom(eventLayer.layer.options.maxZoom);},0);  //wrap the above in setTimeout to overcome bug where baselayer you switch to fails to draw (screen is blank) if there are no markers on the map (e.g. - if user zooms way in before clicking on the map) 
+		}
+	});
 
 	map.on('locationfound', onLocationFound);
 	map.on('locationerror', onLocationError);

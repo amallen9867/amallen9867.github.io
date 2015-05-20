@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="x-ua-compatible" content="IE=edge"> <!--switch to this for IE 10 compatibility mode bullcrap-->
+    <!--<meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
+      on iOS devices-->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>About This Map</title>
+    <style type="text/css">
+        body
+        {
+            padding: 0px;
+            font-size: 12pt;
+            color: white;
+            font-family: Arial;
+            background-color: #6E6E6E;
+        }
+        
+        p
+        {
+            margin-left: 45px;
+        }
+
+        li
+        {
+            margin-left: 50px;
+        }
+
+        img
+        {
+            vertical-align: middle;
+        }
+
+        .margin {margin:5px;} 
+
+        .style1
+        {
+            color: #FFFF66;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+  <div class="Help" id="Help" style="Z-INDEX: 1000; LEFT: 3%; OVERFLOW: visible; WIDTH: 94%; POSITION: absolute; TOP: 20px; HEIGHT: 500px">
+    <h3><u>About This Map</u></h3>
+    <p>This web map displays federal camping areas in the United States. Click (or tap) on the map to see those within 30 miles your click location.</p>
+    <h3><u>Quick Tutorial</u></h3>
+    <p>The map starts by trying to obtain your current location and automatically finding federal camping areas within 30 miles. If not, click on the map to find them. Some places have no federal camping areas within 30 miles. Click on an individual campground marker to display its name. Click the name to be taken to Recreation.gov for lots of information about a particular camping area. You can also change the basemap via the icon in the top right.</p>
+    <h3><u>Geek Stuff</u></h3>
+    <p>I like to code and camp so I did this web map for fun. The data is drawn from the USDA's <a href="http://usda.github.io/RIDB/">Recreation Information Database (RIDB) API</a>. The map searches for recreation areas or facilities on federal public lands that have camping. Examples of federal public lands include the National Park Service, U.S. Forest Service, Bureau of Land Management, U.S. Fish and Wildlife Service, etc. It does not include places such as state parks or forests. Sometimes the results are less than helpful, such as when an entire U.S. Forest Ranger District or National Park gets a point on the map instead of a specific campground within it. Note too that not all of these camping areas are for overnight use. Some are only day use areas. Please visit the web page for specific information about each camping area.</p>
+	<p>Programmers and developers, check out the <a href="http://usda.github.io/RIDB/">RIDB API</a> if you are interested in finding out more about what is going on behind the scenes. You can also visit the <a href="http://leafletjs.com/">Leaflet</a> web site for info about this great open source web mapping resource.</p>
+    <p>More could be done to expand and improve this web map. I may or may not add to it in the future. Please remember it was done for fun rather than to build a fully featured app. Feel free to grab the code and build on it yourself!</p>
+    <br>
+    </div>
+</body>
+</html>
