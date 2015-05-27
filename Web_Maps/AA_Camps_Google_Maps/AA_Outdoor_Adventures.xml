@@ -1373,10 +1373,19 @@
 <fme:Camps>
 <fme:X_Geo>-108.346985417811</fme:X_Geo>
 <fme:Y_Geo>34.0254522396172</fme:Y_Geo>
-<fme:Where>Gila</fme:Where>
+<fme:Where>Apache Nat'l Forest (Gila Admin.)</fme:Where>
 <fme:Who>Larry Layne</fme:Who>
 <fme:When>201503</fme:When>
 <fme:What>Tons of animals (elk, coyotes, turkeys, rabbit, frogs, many birds, etc.). Saw my first crossbills. Heard a wolf howl 250 yards from camp! Down to 10 degrees at night. Brrr!</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-108.347246804007</fme:X_Geo>
+<fme:Y_Geo>34.0253374847018</fme:Y_Geo>
+<fme:Where>Apache Nat'l Forest (Gila Admin.)</fme:Where>
+<fme:Who>Larry Layne</fme:Who>
+<fme:When>201505</fme:When>
+<fme:What>Didn't see or hear any wolves but found several tracks (wolf, coyote, bear, elk, turkey). Saw lots of birds, a bear, a couple coyotes, and plenty of cattle.</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 </fme:Camps-table>
