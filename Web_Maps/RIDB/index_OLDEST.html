@@ -26,21 +26,20 @@
 		}
 
 	</style>
-    <title>Campgrounds</title>
+    <title>Camping</title>
 	<script type="text/javascript">
 	</script>
 </head>
 <body>
 	<div id='map' style='width:100%;height:100%'>
-		<div id='map_title'>Campgrounds</div>
+		<div id='map_title'>Camping</div>
 	</div>
 	<script type="text/javascript">
 //***other stuff to do:
-//find camps at current location
-//"Searching..." while searching for camps
 //let user know if no results or more than 50 results
 //marker clustering for points right on top of each other
 //user input for distance to search, type of camp
+//driving directions?
 //click to zoom to camp from popup
 //zoom in beyond level 17 for ESRI basemaps and automatically zoom back out to max zoom of OSM
 
@@ -102,21 +101,18 @@
 	//get XY from map click
 	//create variables outside function so they get refreshed/re-used with each click
 	//var geojsonPoint;
-	var leafletMarker;
+	var clickMarker;
 	var mouseY;
 	var mouseX;
 	map.on('click', function(e){
 		if (!bIsSearchInProgress) {
 			bIsSearchInProgress = true;
 			searching.addTo(map); //add searching control to map
-			if (leafletMarker) {map.removeLayer(leafletMarker)}; //remove previous marker from map
-			leafletMarker = L.marker(e.latlng);
+			if (clickMarker) {map.removeLayer(clickMarker)}; //remove previous click marker from map
+			clickMarker = L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'thumb-tack', prefix: 'fa', markerColor: 'darkred'}) }).addTo(map)
+				.bindPopup("You clicked here.");
 			mouseY = e.latlng.lat;
 			mouseX = e.latlng.lng;
-			//alert(e.latlng);
-			//leafletMarker = L.marker(e.latlng,{icon: aCampIcon}).bindPopup("You clicked the map here.").addTo(map);
-			//geojsonPoint = leafletMarker.toGeoJSON();
-			//GetCamps(geojsonPoint);
 			GetCamps();
 		} else {
 			//do nothing
@@ -130,7 +126,8 @@
 		var url = 'https://ridb.recreation.gov/api/v1/facilities';
 		//console.log(params);
 		http=new XMLHttpRequest();
-		http.open('GET', url + '.json?apikey=C6FD431461184F229360D0A58F71D6D0&limit=50&activity=9&org=131,137,138&latitude=' + mouseY + '&longitude=' + mouseX + '&radius=30&' + new Date().getTime(), true); //add random value to end of URL to get around Safari iOS caching of results
+		http.open('GET', url + '.json?apikey=C6FD431461184F229360D0A58F71D6D0&limit=50&activity=9&org=-1&latitude=' + mouseY + '&longitude=' + mouseX + '&radius=30&' + new Date().getTime(), true); //add random value to end of URL to get around Safari iOS caching of results
+		//Notes: activity=9 is camping (although some are only day use); some org IDs: 126=BLM, 128=NPS, 131=USDA Forest Service, -1=All
 		http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 		http.onreadystatechange = function() { //call function when the state changes
 			if(http.readyState == 4 && http.status == 200) {
@@ -142,12 +139,13 @@
 					if (!((result.RECDATA[x].FacilityLatitude=='')) && !((result.RECDATA[x].FacilityLongitude==''))) { //drop records where xys are not populated
 						//xy = result.features[x].geometry;
 						//console.log(result.features[x].geometry);
-						marker = L.marker([result.RECDATA[x].FacilityLatitude,result.RECDATA[x].FacilityLongitude]).bindPopup('<b>' + result.RECDATA[x].FacilityName + '</b>'); //create marker and popup info
+						marker = L.marker([result.RECDATA[x].FacilityLatitude,result.RECDATA[x].FacilityLongitude]).bindPopup("<a href='http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&facilityId=" + result.RECDATA[x].FacilityID + "' target='_blank'>" + result.RECDATA[x].FacilityName + "</a>"); //create marker and popup info
 						markers.addLayer(marker); //add marker to markers feature group
 					}
 				}
 				if (Object.keys(result.RECDATA).length > 0) {
 					map.addLayer(markers); //add the feature group of markers to the map
+					if (clickMarker) {markers.addLayer(clickMarker)}; //add clickMarker to markers feature group if it exists
 					map.fitBounds(markers.getBounds()); //zoom to bounds of markers
 					searching.removeFrom(map); //remove (hide) searching control
 					bIsSearchInProgress = false;
@@ -165,7 +163,7 @@
 	function onLocationFound(e) {
 		var radius = e.accuracy / 2;
 		//L.marker(e.latlng).addTo(map)
-		L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'info', prefix: 'fa', markerColor: 'orange'}) }).addTo(map)
+		L.marker(e.latlng, {icon: L.AwesomeMarkers.icon({icon: 'bullseye', prefix: 'fa', markerColor: 'orange'}) }).addTo(map)
 			//.bindPopup("You are within " + radius + " meters from this point").openPopup();
 			.bindPopup("Your current location.").openPopup();
 		//L.circle(e.latlng, radius).addTo(map); //circle around marker
