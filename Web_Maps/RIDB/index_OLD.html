@@ -36,8 +36,6 @@
 	</div>
 	<script type="text/javascript">
 //***other stuff to do:
-//put together "About this map" file
-//add camping icon
 //click to zoom to camp from popup
 //let user know if more than 50 results?
 //marker clustering for points right on top of each other?
@@ -142,13 +140,27 @@
 		}
 	}
 
+	var CampIcon = L.Icon.extend({
+		options: {
+			iconUrl: 'tent.png',
+			iconSize:     [32, 37],
+			iconAnchor:   [16, 37], //adjust so tip of icon is at marker location
+			popupAnchor:  [0, -37] //where popup will open relative to icon anchor
+		}
+	});
+	var aCampIcon = new CampIcon();
+
+	//test marker alignment to make sure the offsets above are accurate
+	//L.marker([35.121, -106.616], {icon: aCampIcon}).bindPopup("I am a camp icon.").addTo(map);
+	//var marker = L.marker([35.121, -106.616], {icon: L.AwesomeMarkers.icon({icon: 'coffee', prefix: 'fa', markerColor: 'purple'}), zIndexOffset: 990 }).addTo(map);
+
 	function GetCamps(url){
 		//*Please get your own API key (it's free!) at https://ridb.recreation.gov/?action=register
 		var params = '.json?apikey=C6FD431461184F229360D0A58F71D6D0'; //requesting JSON format and providing API key
 		//console.log(params);
 		var http = new XMLHttpRequest();
 		http.open('GET', url + '.json?apikey=C6FD431461184F229360D0A58F71D6D0&limit=50&activity=9&org=-1&latitude=' + mouseY + '&longitude=' + mouseX + '&radius=30&' + new Date().getTime(), true); //add random value to end of URL to get around Safari iOS caching of results
-		//Notes: activity=9 is camping (although some are only day use); some org IDs: 126=BLM, 128=NPS, 131=USDA Forest Service, -1=All
+		//Notes: activity=9 is camping (although some are only day use); some org IDs: 126=BLM, 128=NPS, 131=USDA Forest Service, -1=All; radius is distance in miles
 		http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 		http.onreadystatechange = function() { //call function when the state changes
 			if(http.readyState == 4 && http.status == 200) {
@@ -171,7 +183,7 @@
 							} else {
 								recGovURL = "http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&facilityId=" + result.RECDATA[x].FacilityID; //assemble recreation.gov URL
 							}
-							marker = L.marker([result.RECDATA[x].FacilityLatitude,result.RECDATA[x].FacilityLongitude]).bindPopup("<a href='" + recGovURL + "' target='_blank'>" + result.RECDATA[x].FacilityName + "</a>"); //create marker and popup info
+							marker = L.marker([result.RECDATA[x].FacilityLatitude,result.RECDATA[x].FacilityLongitude], {icon: aCampIcon}).bindPopup("<a href='" + recGovURL + "' target='_blank'>" + result.RECDATA[x].FacilityName + "</a>"); //create marker and popup info
 							markers.addLayer(marker); //add marker to markers feature group
 						}
 					}
@@ -181,7 +193,7 @@
 						if (!((result.RECDATA[x].RecAreaLatitude=='')) || !((result.RECDATA[x].RecAreaLongitude==''))) { //drop records where xys are not populated
 							//xy = result.features[x].geometry;
 							//console.log(result.features[x].geometry);
-							marker = L.marker([result.RECDATA[x].RecAreaLatitude,result.RECDATA[x].RecAreaLongitude]).bindPopup("<a href='http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&recAreaId=" + result.RECDATA[x].RecAreaID + "' target='_blank'>" + result.RECDATA[x].RecAreaName + "</a>"); //create marker and popup info
+							marker = L.marker([result.RECDATA[x].RecAreaLatitude,result.RECDATA[x].RecAreaLongitude], {icon: aCampIcon}).bindPopup("<a href='http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&recAreaId=" + result.RECDATA[x].RecAreaID + "' target='_blank'>" + result.RECDATA[x].RecAreaName + "</a>"); //create marker and popup info
 							markers.addLayer(marker); //add marker to markers feature group
 						}
 					}
