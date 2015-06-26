@@ -39,7 +39,6 @@
 	</div>
 	<script type="text/javascript">
 //***other stuff to do:
-//click to zoom to camp from popup
 //let user know if more than 50 results?
 //user input for distance to search?
 //routing from clickMarker to camp?
@@ -88,7 +87,7 @@
 	])
 	//polygon.addTo(map); //visually confirm extent is correct (just for testing)
 
-	//initialize "Searching..." control and some other stuff for when user clicks on map
+	//initialize "Searching..." control and some other stuff when user clicks on map
 	var searching = L.control();
 	var sSearchingText;
 	var bIsSearchInProgress = false;
@@ -108,14 +107,15 @@
 	var geolocationMarker;
 	var justLoaded = true; //boolean to group geolocationMarker with camp markers or not
 
-	//get XY from map click
-	//create variables outside function so they get refreshed/re-used with each click
-	//var geojsonPoint;
+	var notClickedYet; //initialize boolean to programmatically fire click event
+
+	//get XY from map click; create variables outside function so they get refreshed/re-used with each click
 	var clickMarker;
 	var mouseY;
 	var mouseX;
 	map.on('click', function(e){
 		if (!bIsSearchInProgress) {
+			notClickedYet = true; //set boolean to true to programmatically fire click event when building popups
 			bIsSearchInProgress = true;
 			searching.addTo(map); //add searching control to map
 			if (clickMarker) {map.removeLayer(clickMarker)}; //remove previous click marker from map
@@ -156,6 +156,17 @@
 	//L.marker([35.121, -106.616], {icon: aCampIcon}).bindPopup("I am a camp icon.").addTo(map);
 	//var marker = L.marker([35.121, -106.616], {icon: L.AwesomeMarkers.icon({icon: 'coffee', prefix: 'fa', markerColor: 'purple'}), zIndexOffset: 990 }).addTo(map);
 
+	function zoomLevelPopup(marker, strPopup1, strPopup2) { //bind popup content to marker based on zoom level
+		marker.on('click', function() {
+			if ((map.getZoom() < 15)) {
+				marker.bindPopup(strPopup1);
+			} else {
+				marker.bindPopup(strPopup2);
+			}
+		});
+		if (notClickedYet) {marker.fire('click');}; //fire the click event when initially binding popup content; otherwise the user has to click the marker twice to see popup info the first time (***Is this technically accurate? I don't think my wording is quite right.)
+	}
+
 	function GetCamps(url){
 		//*Please get your own API key (it's free!) at https://ridb.recreation.gov/?action=register
 		var params = '.json?apikey=C6FD431461184F229360D0A58F71D6D0'; //requesting JSON format and providing API key
@@ -185,7 +196,13 @@
 							} else {
 								recGovURL = "http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&facilityId=" + result.RECDATA[x].FacilityID; //assemble recreation.gov URL
 							}
-							marker = L.marker([result.RECDATA[x].FacilityLatitude,result.RECDATA[x].FacilityLongitude], {icon: aCampIcon}).bindPopup("<a href='" + recGovURL + "' target='_blank'>" + result.RECDATA[x].FacilityName + "</a>"); //create marker and popup info
+							//create popup info and marker
+							//var strZoomTo = "<td>&nbsp;<a href='javascript:map.setView([" + result.RECDATA[x].FacilityLatitude + "," + result.RECDATA[x].FacilityLongitude + "],(map.getMaxZoom() - 1));map.closePopup();void(0);'>Zoom To</a></td>";
+							var strPopup1 = "<table width=100%><tr><th colspan='2' align='center'><em>" + result.RECDATA[x].FacilityName + "</em></th></tr><tr><td><a href='" + recGovURL + "' target='_blank'>Get Info</a></td><td style='text-align:right'>&nbsp;<a href='javascript:map.setView([" + result.RECDATA[x].FacilityLatitude + "," + result.RECDATA[x].FacilityLongitude + "],(map.getMaxZoom() - 1));map.closePopup();void(0);'>Zoom To</a></td></tr></table>"
+							var strPopup2 = "<table width=100%><tr><th colspan='2' align='center'><em>" + result.RECDATA[x].FacilityName + "</em></th></tr><tr><td><a href='" + recGovURL + "' target='_blank'>Get Info</a></td><td>&nbsp;&nbsp;&nbsp;</td></tr></table>"
+							var marker = L.marker([result.RECDATA[x].FacilityLatitude,result.RECDATA[x].FacilityLongitude], {icon: aCampIcon});
+
+							zoomLevelPopup(marker, strPopup1, strPopup2); //call function to bind popup content to marker based on zoom level
 							markers.addLayer(marker); //add marker to markers feature group
 						}
 					}
@@ -195,7 +212,13 @@
 						if (!((result.RECDATA[x].RecAreaLatitude=='')) || !((result.RECDATA[x].RecAreaLongitude==''))) { //drop records where xys are not populated
 							//xy = result.features[x].geometry;
 							//console.log(result.features[x].geometry);
-							marker = L.marker([result.RECDATA[x].RecAreaLatitude,result.RECDATA[x].RecAreaLongitude], {icon: aCampIcon}).bindPopup("<a href='http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&recAreaId=" + result.RECDATA[x].RecAreaID + "' target='_blank'>" + result.RECDATA[x].RecAreaName + "</a>"); //create marker and popup info
+							//create popup info and marker
+							//var strZoomTo = "<td>&nbsp;<a href='javascript:map.setView([" + result.RECDATA[x].RecAreaLatitude + "," + result.RECDATA[x].RecAreaLongitude + "],(map.getMaxZoom() - 1));map.closePopup();void(0);'>Zoom To</a></td>"
+							var strPopup1 = "<table width=100%><tr><th colspan='2' align='center'><em>" + result.RECDATA[x].RecAreaName + "</em></th></tr><tr><td><a href='http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&recAreaId=" + result.RECDATA[x].RecAreaID + "' target='_blank'>Get Info</a></td><td style='text-align:right'>&nbsp;<a href='javascript:map.setView([" + result.RECDATA[x].RecAreaLatitude + "," + result.RECDATA[x].RecAreaLongitude + "],(map.getMaxZoom() - 1));map.closePopup();void(0);'>Zoom To</a></td></tr></table>";
+							var strPopup2 =  "<table width=100%><tr><th colspan='2' align='center'><em>" + result.RECDATA[x].RecAreaName + "</em></th></tr><tr><td><a href='http://www.recreation.gov/recreationalAreaDetails.do?contractCode=NRSO&recAreaId=" + result.RECDATA[x].RecAreaID + "' target='_blank'>Get Info</a></td><td>&nbsp;&nbsp;&nbsp;</td></tr></table>";
+							var marker = L.marker([result.RECDATA[x].RecAreaLatitude,result.RECDATA[x].RecAreaLongitude], {icon: aCampIcon}); //create marker and popup info
+
+							zoomLevelPopup(marker, strPopup1, strPopup2); //call function to bind popup content to marker based on zoom level
 							markers.addLayer(marker); //add marker to markers feature group
 						}
 					}
@@ -216,6 +239,7 @@
 						searching.update(sSearchingText);
 						setTimeout(function() {searching.removeFrom(map);bIsSearchInProgress = false;},2000);
 					}
+					notClickedYet = false; //clear boolean that programmatically fires click event
 				}
 			}
 		}
