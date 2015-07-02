@@ -257,6 +257,7 @@
 		//L.circle(e.latlng, radius).addTo(map); //circle around marker
 		mouseY = e.latlng.lat;
 		mouseX = e.latlng.lng;
+		notClickedYet = true; //set boolean to true to programmatically fire click event when building popups
 		ProcessUrls();
 	}
 
