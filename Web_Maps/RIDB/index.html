@@ -76,7 +76,8 @@
 		"Topos (ESRI)": esriUSATopos,
 		"OpenStreetMap": osmMapnik
 	};
-	L.control.layers(baseLayers).addTo(map);
+	var baseLayersControl = L.control.layers(baseLayers).addTo(map);
+	var blcContainer = baseLayersControl._container; //needed below to close base layers control in custom manner
 
 	//polygon to represent U.S. extent
 	var polygon = L.polygon([
@@ -273,6 +274,12 @@
 			//alert("Map zoom level is " + map.getZoom() + ". Switching to " + eventLayer.name + " with maxzoom of " + eventLayer.layer.options.maxZoom + ".");
 			//map.setZoom(eventLayer.layer.options.maxZoom);
 			setTimeout(function() {map.setZoom(eventLayer.layer.options.maxZoom);},0);  //wrap the above in setTimeout to overcome bug where baselayer you switch to fails to draw (screen is blank) if there are no markers on the map (e.g. - if user zooms way in before clicking on the map) 
+		}
+		//automatically close base layers control when selecting a different basemap
+		//for mobile devices, default behavior is to close it with a map click but this app initiates a new camp search with a map click so there is a conflict (i.e. - I don't want a new camp search when closing the control)
+		//*note: problem still exists if user doesn't select a new basemap; they have to click on the map to close base layers control
+		if (L.DomUtil.hasClass(blcContainer, 'leaflet-control-layers-expanded')) {
+			L.DomUtil.removeClass(blcContainer, 'leaflet-control-layers-expanded');
 		}
 	});
 

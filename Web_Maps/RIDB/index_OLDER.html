@@ -9,8 +9,11 @@
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
+	<link rel="stylesheet" href="Leaflet.markercluster/MarkerCluster.css" />
+	<link rel="stylesheet" href="Leaflet.markercluster/MarkerCluster.Default.css" />
 	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+	<script src="Leaflet.markercluster/leaflet.markercluster-src.js"></script>
 	<style>
 		body {padding:0;margin:0;background-color:black;}
 		html, body {height:100%;width:100%;}
@@ -38,9 +41,8 @@
 //***other stuff to do:
 //click to zoom to camp from popup
 //let user know if more than 50 results?
-//marker clustering for points right on top of each other?
 //user input for distance to search?
-//driving directions?
+//routing from clickMarker to camp?
 
 	strAboutThisMap = ' | <a href="AboutThisMap.html">About this map</a>'
 	//base layers
@@ -127,7 +129,7 @@
 		}
 	});
 
-	var markers = new L.FeatureGroup(); //create variable outside function so markers get refreshed with each click
+	var markers = L.markerClusterGroup(); //create variable outside function so markers get refreshed with each click
 
 	var urlsProcessedCount = 0; //initialize variable
 	function ProcessUrls() {
@@ -203,8 +205,8 @@
 				}
 				if (urlsProcessedCount == 2) {
 					if (markers.getLayers().length > 0) { //process markers in feature group, if any
-						if (geolocationMarker && justLoaded) {markers.addLayer(geolocationMarker)}; //add geolocationMarker to markers feature group if it exists and the app just loaded/refreshed
-						if (clickMarker) {markers.addLayer(clickMarker)}; //add clickMarker to markers feature group if it exists
+						if (geolocationMarker && justLoaded) {geolocationMarker.addTo(map)}; //add geolocationMarker to map if it exists and the app just loaded/refreshed
+						if (clickMarker) {clickMarker.addTo(map)}; //add clickMarker to map if it exists
 						map.addLayer(markers); //add the feature group of markers to the map
 						map.fitBounds(markers.getBounds()); //zoom to bounds of markers
 						searching.removeFrom(map); //remove (hide) searching control
