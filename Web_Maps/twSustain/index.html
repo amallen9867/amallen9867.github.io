@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sustainability Map</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<link rel="stylesheet" href="Leaflet.markercluster/MarkerCluster.css" />
+	<link rel="stylesheet" href="Leaflet.markercluster/MarkerCluster.Default.css" />
+	<script src="Leaflet.markercluster/leaflet.markercluster-src.js"></script>
+	<style>
+		body {padding:0;margin:0;background-color:black}
+		html, body {height:100%;width:100%;}
+	</style>
+</head>
+<body>
+	<div id="map" style="width:100%;height:100%"></div>
+    <script src="Sustainability.json" type="text/javascript"></script>
+	<script>
+
+        //base layers you want to use
+        var osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 16,
+			attribution: 'Map data by&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'}),
+
+            esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
+			maxZoom: 19,
+			attribution: 'Map data by&copy; <a href="http://www.esri.com">ESRI</a>'}),
+
+            esriNatGeoWorld = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
+			maxZoom: 12,
+			attribution: 'Map data by&copy; <a href="http://www.esri.com">ESRI</a>'});
+
+        //initialize the map
+		var map = L.map('map', {
+			center: [0, 0],
+			zoom: 1,
+			layers: [osmMapnik] //the default map layer
+		});
+
+        //add base layers and the map control
+		var baseLayers = {
+            "OSM Mapnik": osmMapnik,
+			"ESRI Imagery": esriWorldImagery,
+			"ESRI NatGeo": esriNatGeoWorld
+		};
+        L.control.layers(baseLayers).addTo(map);
+
+        function popup(feature, layer) {
+            if (feature.properties && feature.properties.Y) {
+                layer.bindPopup("Lat: " + feature.properties.Y + "<br>Long: " + feature.properties.X);
+            }
+        }
+
+		var markers = L.markerClusterGroup();
+
+		var geoJsonLayer = L.geoJson(geojsonPoints, {
+            onEachFeature: popup,
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng);
+            }
+		});
+		markers.addLayer(geoJsonLayer);
+
+		map.addLayer(markers);
+		map.fitBounds(markers.getBounds());
+
+        //if map is zoomed in farther than maxzoom of baselayer being switched to then zoom out to maxzoom of baselayer 
+        map.on('baselayerchange', function (eventLayer) {
+            if (map.getZoom() > eventLayer.layer.options.maxZoom) {
+                //alert("Map zoom level is " + map.getZoom() + ". Switching to " + eventLayer.name + " with maxzoom of " + eventLayer.layer.options.maxZoom + ".");
+                map.setZoom(eventLayer.layer.options.maxZoom);
+            }
+        });
+	</script>
+</body>
+</html>
