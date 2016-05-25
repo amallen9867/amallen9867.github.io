@@ -49,7 +49,7 @@
 
         function popup(feature, layer) {
             if (feature.properties && feature.properties.Y) {
-                layer.bindPopup("Lat: " + feature.properties.Y + "<br>Long: " + feature.properties.X);
+                layer.bindPopup("Hashtags: " + feature.properties.Hashtags + "<br>Tweet: " + feature.properties.Tweet + "<br>Lat: " + feature.properties.Y + "<br>Long: " + feature.properties.X + "<br>Type: " + feature.properties.Type);
             }
         }
 
