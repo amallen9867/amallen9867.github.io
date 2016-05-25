@@ -64,7 +64,7 @@
 		markers.addLayer(geoJsonLayer);
 
 		map.addLayer(markers);
-		map.fitBounds(markers.getBounds());
+		//map.fitBounds(markers.getBounds());
 
         //if map is zoomed in farther than maxzoom of baselayer being switched to then zoom out to maxzoom of baselayer 
         map.on('baselayerchange', function (eventLayer) {
