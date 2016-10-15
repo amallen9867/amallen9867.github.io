@@ -1,0 +1,163 @@
+<html>
+<head>
+	<title>PNM Outage Map</title>
+	<meta charset=utf-8 />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<!-- Load Leaflet from CDN-->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet-src.js"></script>
+
+	<!-- Load Esri Leaflet from CDN -->
+	<script src="https://unpkg.com/esri-leaflet@2.0.3"></script>
+
+	<!-- Include Leaflet.markercluster via rawgit.com
+	in production you'd be better off hosting these libraries yourself -->
+	<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0-beta.2.0/dist/MarkerCluster.Default.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0-beta.2.0/dist/MarkerCluster.css">
+	<script src="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/v1.0.0-beta.2.0/dist/leaflet.markercluster.js"></script>
+
+	<!-- Load Clustered Feature Layer from CDN -->
+	<script src="https://unpkg.com/esri-leaflet-cluster@2.0.0"></script>
+
+	<style>
+	body { margin:0; padding:0; }
+	#map { position: absolute; top:0; bottom:0; right:0; left:0; }
+	</style>
+</head>
+
+<body onload="timer=setInterval('clearAndRefresh();',60000)">
+	<div id="map"></div>
+	<script>
+
+        //base layers you want to use; setting min/max zoom to 7/15 for all base layers to match current PNM GM outage map
+        var esriNatGeoWorld = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
+			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+
+            esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
+			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+
+            esriUSATopos = L.tileLayer('http://server.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/{z}/{y}/{x}.png', {
+			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+
+            /*mapBox = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+            id: 'examples.map-i86knfo3',
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'© <a href="http://mapbox.com">Mapbox</a>'}),*/
+
+            osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: 'Map data by &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'});
+            //Stamen has some cool basemaps too
+
+        //initialize the map
+		var map = L.map('map', {
+			center: [34.5, -106.5],
+			zoom: 7,
+			maxZoom: 15,
+			minZoom: 7,
+			layers: [esriNatGeoWorld] //the default base layer
+		});
+
+        //add base layers and the map control
+		var baseLayers = {
+			"ESRI NatGeo": esriNatGeoWorld,
+			"ESRI Imagery": esriWorldImagery,
+			"ESRI Topos USA": esriUSATopos,
+            //"Mapbox": mapBox,
+            "OSM Mapnik": osmMapnik
+		};
+        L.control.layers(baseLayers).addTo(map);
+
+		//if you only want one basemap, you can get rid of everything above and use these two lines
+		//var map = L.map('map').setView([34.5, -106.5], 7);
+		//L.esri.basemapLayer('Streets').addTo(map);
+
+		//configure icons
+		var icons = {
+			zero: L.icon({
+				iconUrl: 'images/zero_outages.png',
+				iconSize: [120, 120],
+				iconAnchor: [60, 120], //adjust so tip of icon is at marker location
+				popupAnchor: [0, -120], //where popup will open relative to icon anchor
+			}),
+			lt50: L.icon({
+				iconUrl: 'images/1_lightning_bolt.png',
+				iconSize: [28, 28],
+				iconAnchor: [14, 28],
+				popupAnchor: [0, -28],
+			}),
+			f50to250: L.icon({
+				iconUrl: 'images/2_lightning_bolts.png',
+				iconSize: [32, 32],
+				iconAnchor: [16, 32],
+				popupAnchor: [0, -32],
+			}),
+			gt250: L.icon({
+				iconUrl: 'images/3_lightning_bolts.png',
+				iconSize: [38, 38],
+				iconAnchor: [19, 38],
+				popupAnchor: [0, -38],
+			}),
+		};
+
+		//L.marker([35.121, -106.616], {icon: icons["lt50"]}).bindPopup("I am an outage icon.").addTo(map);
+        //var marker = L.marker([35.121, -106.616]).addTo(map); //test marker at coordinates Y,X; you want it to align with the icon
+
+var outages
+function addFeatureLayerAndPopups() {
+		//add feature layer to map
+		//new constructor syntax at 2.0.0
+		outages = L.esri.Cluster.featureLayer({
+		url: 'http://services.arcgis.com/THPojmskbjppDwMt/arcgis/rest/services/Electric_Outage_Data/FeatureServer/0',
+		pointToLayer: function (geojson, latlng) {
+			if (geojson.properties.Customers_Affected == 0) { //zero outages
+				//alert ("Customers zero(0): " + geojson.properties.Customers_Affected);
+				iconType = "zero";
+			} else if (geojson.properties.Customers_Affected < 50) { //less than 50 customers
+				//alert ("Customers < 50: " + geojson.properties.Customers_Affected);
+				iconType = "lt50";
+			} else if (geojson.properties.Customers_Affected > 250) { //more than 250 customers
+				//alert ("Customers > 250: " + geojson.properties.Customers_Affected);
+				iconType = "gt250";
+			} else { //50 - 250 customers
+				//alert ("Customers 50 - 250: " + geojson.properties.Customers_Affected);
+				iconType = "f50to250";
+			}
+			return L.marker(latlng, {
+				//icon: icons[geojson.properties.direction.toLowerCase()]
+				//icon: anOutageIcon
+				icon: icons[iconType]
+			});
+		},
+		}).addTo(map);
+
+		//add popups
+		outages.bindPopup(function (evt) {
+			//return L.Util.template('<p>{Status}<br>{Est_Time_Power_Out}<br>{Est_Time_Power_Back_On}<br>{Customers_Affected}<br>{Cause}</p>', evt.feature.properties);
+			return L.Util.template("<table width='225px'><tr><th colspan='2' align='center'><em>Outage Information</em></th></tr><tr bgcolor='#E3E3F3'><td>Status</td><td style='text-align:left'>{Status}</td></tr><tr><td>Outage Reported</td><td style='text-align:left'>{Est_Time_Power_Out}</td></tr><tr bgcolor='#E3E3F3'><td>Estimated Restore Time</td><td>{Est_Time_Power_Back_On}</td></tr><tr><td>Customers Affected</td><td>{Customers_Affected}</td></tr><tr bgcolor='#E3E3F3'><td>Cause</td><td>{Cause}</td></tr></table>", evt.feature.properties);
+		});
+}
+addFeatureLayerAndPopups();
+
+		//zoom to bounds of outages
+		outages.query().bounds(function (error, latlngbounds) {
+			map.fitBounds(latlngbounds); //***might want to subtract one zoom level, sometimes there are outages at edge of bounding box
+		});
+
+		//***do I need this anymore???; @1.0.1 it looks like the radio button is greyed out if zoomed in beyond a basemap's maxzoom
+        //if map is zoomed in farther than maxzoom of baselayer being switched to then zoom out to maxzoom of baselayer 
+        map.on('baselayerchange', function (eventLayer) {
+            if (map.getZoom() > eventLayer.layer.options.maxZoom) {
+                alert("Map zoom level is " + map.getZoom() + ". Switching to " + eventLayer.name + " with maxzoom of " + eventLayer.layer.options.maxZoom + ".");
+                map.setZoom(eventLayer.layer.options.maxZoom);
+            }
+        });
+
+function clearAndRefresh() {
+map.removeLayer(outages);
+addFeatureLayerAndPopups();
+}
+	</script>
+</body>
+</html>
