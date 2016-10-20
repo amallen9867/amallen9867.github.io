@@ -20,7 +20,6 @@
 	<!-- Load Clustered Feature Layer from CDN -->
 	<script src="https://unpkg.com/esri-leaflet-cluster@2.0.0"></script>
 
-<<<<<<< HEAD
 	<!-- Load ESRI Leaflet Geocoder from CDN -->
 	<link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.1.4/dist/esri-leaflet-geocoder.css">
 	<script src="https://unpkg.com/esri-leaflet-geocoder@2.1.4"></script>
@@ -36,19 +35,6 @@
 	<script>
 
         //base layers you want to use
-=======
-	<style>
-	body { margin:0; padding:0; }
-	#map { position: absolute; top:0; bottom:0; right:0; left:0; }
-	</style>
-</head>
-
-<body onload="timer=setInterval('clearAndRefresh();',60000)">
-	<div id="map"></div>
-	<script>
-
-        //base layers you want to use; setting min/max zoom to 7/15 for all base layers to match current PNM GM outage map
->>>>>>> origin/master
         var esriNatGeoWorld = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
 			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
 
@@ -73,11 +59,7 @@
 			center: [34.5, -106.5],
 			zoom: 7,
 			maxZoom: 15,
-<<<<<<< HEAD
 			minZoom: 7, //setting min/max zoom to 7/15 for the map to match current PNM GM outage map
-=======
-			minZoom: 7,
->>>>>>> origin/master
 			layers: [esriNatGeoWorld] //the default base layer
 		});
 
@@ -98,7 +80,6 @@
 		//configure icons
 		var icons = {
 			zero: L.icon({
-<<<<<<< HEAD
 				iconUrl: 'images/no-power-outage.png',
 				iconSize: [104, 102],
 				iconAnchor: [52, 51], //adjust so tip of icon is at marker location
@@ -121,37 +102,12 @@
 				iconSize: [51, 50],
 				iconAnchor: [25, 50],
 				popupAnchor: [0, -50],
-=======
-				iconUrl: 'images/zero_outages.png',
-				iconSize: [120, 120],
-				iconAnchor: [60, 120], //adjust so tip of icon is at marker location
-				popupAnchor: [0, -120], //where popup will open relative to icon anchor
-			}),
-			lt50: L.icon({
-				iconUrl: 'images/1_lightning_bolt.png',
-				iconSize: [28, 28],
-				iconAnchor: [14, 28],
-				popupAnchor: [0, -28],
-			}),
-			f50to250: L.icon({
-				iconUrl: 'images/2_lightning_bolts.png',
-				iconSize: [32, 32],
-				iconAnchor: [16, 32],
-				popupAnchor: [0, -32],
-			}),
-			gt250: L.icon({
-				iconUrl: 'images/3_lightning_bolts.png',
-				iconSize: [38, 38],
-				iconAnchor: [19, 38],
-				popupAnchor: [0, -38],
->>>>>>> origin/master
 			}),
 		};
 
 		//L.marker([35.121, -106.616], {icon: icons["lt50"]}).bindPopup("I am an outage icon.").addTo(map);
         //var marker = L.marker([35.121, -106.616]).addTo(map); //test marker at coordinates Y,X; you want it to align with the icon
 
-<<<<<<< HEAD
 		//add ESRI search control to map
 		var searchControl = L.esri.Geocoding.geosearch({
 			searchBounds: [[31.0, -109.25],[37.0, -102.75]], //limit search to box roughly covering NM (but a little outside which causes some issues)
@@ -198,43 +154,6 @@
 		}
 
 		AddFeatureLayerAndPopups(); //add outages and their popups when page first loads
-=======
-var outages
-function addFeatureLayerAndPopups() {
-		//add feature layer to map
-		//new constructor syntax at 2.0.0
-		outages = L.esri.Cluster.featureLayer({
-		url: 'http://services.arcgis.com/THPojmskbjppDwMt/arcgis/rest/services/Electric_Outage_Data/FeatureServer/0',
-		pointToLayer: function (geojson, latlng) {
-			if (geojson.properties.Customers_Affected == 0) { //zero outages
-				//alert ("Customers zero(0): " + geojson.properties.Customers_Affected);
-				iconType = "zero";
-			} else if (geojson.properties.Customers_Affected < 50) { //less than 50 customers
-				//alert ("Customers < 50: " + geojson.properties.Customers_Affected);
-				iconType = "lt50";
-			} else if (geojson.properties.Customers_Affected > 250) { //more than 250 customers
-				//alert ("Customers > 250: " + geojson.properties.Customers_Affected);
-				iconType = "gt250";
-			} else { //50 - 250 customers
-				//alert ("Customers 50 - 250: " + geojson.properties.Customers_Affected);
-				iconType = "f50to250";
-			}
-			return L.marker(latlng, {
-				//icon: icons[geojson.properties.direction.toLowerCase()]
-				//icon: anOutageIcon
-				icon: icons[iconType]
-			});
-		},
-		}).addTo(map);
-
-		//add popups
-		outages.bindPopup(function (evt) {
-			//return L.Util.template('<p>{Status}<br>{Est_Time_Power_Out}<br>{Est_Time_Power_Back_On}<br>{Customers_Affected}<br>{Cause}</p>', evt.feature.properties);
-			return L.Util.template("<table width='225px'><tr><th colspan='2' align='center'><em>Outage Information</em></th></tr><tr bgcolor='#E3E3F3'><td>Status</td><td style='text-align:left'>{Status}</td></tr><tr><td>Outage Reported</td><td style='text-align:left'>{Est_Time_Power_Out}</td></tr><tr bgcolor='#E3E3F3'><td>Estimated Restore Time</td><td>{Est_Time_Power_Back_On}</td></tr><tr><td>Customers Affected</td><td>{Customers_Affected}</td></tr><tr bgcolor='#E3E3F3'><td>Cause</td><td>{Cause}</td></tr></table>", evt.feature.properties);
-		});
-}
-addFeatureLayerAndPopups();
->>>>>>> origin/master
 
 		//zoom to bounds of outages
 		outages.query().bounds(function (error, latlngbounds) {
@@ -250,19 +169,12 @@ addFeatureLayerAndPopups();
             }
         });
 
-<<<<<<< HEAD
 		//update outage data on map
 		function ClearAndRefreshOutages() {
 			map.removeLayer(outages);
 			AddFeatureLayerAndPopups();
 		}
 
-=======
-function clearAndRefresh() {
-map.removeLayer(outages);
-addFeatureLayerAndPopups();
-}
->>>>>>> origin/master
 	</script>
 </body>
 </html>
