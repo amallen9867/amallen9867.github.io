@@ -5,8 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 	<!-- Load Leaflet from CDN-->
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
-	<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet-src.js"></script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 
 	<!-- Load Esri Leaflet from CDN -->
 	<script src="https://unpkg.com/esri-leaflet@2.0.3"></script>
@@ -35,23 +35,23 @@
 	<script>
 
         //base layers you want to use
-        var esriNatGeoWorld = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
-			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+        var esriNatGeoWorld = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
+			attribution: 'Map data by &copy; <a href="https://www.esri.com">ESRI</a>'}),
 
-            esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
-			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+            esriWorldImagery = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
+			attribution: 'Map data by &copy; <a href="https://www.esri.com">ESRI</a>'}),
 
-            esriUSATopos = L.tileLayer('http://server.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/{z}/{y}/{x}.png', {
-			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+            esriUSATopos = L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/{z}/{y}/{x}.png', {
+			attribution: 'Map data by &copy; <a href="https://www.esri.com">ESRI</a>'}),
 
             /*mapBox = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
             id: 'examples.map-i86knfo3',
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'© <a href="http://mapbox.com">Mapbox</a>'}),*/
+			attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'© <a href="https://mapbox.com">Mapbox</a>'}),*/
 
-            osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			attribution: 'Map data by &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'});
+            osmMapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: 'Map data by &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'});
             //Stamen has some cool basemaps too
 
         //initialize the map
@@ -124,7 +124,7 @@
 			//add feature layer to map
 			//new constructor syntax at 2.0.0
 			outages = L.esri.Cluster.featureLayer({
-			url: 'http://services.arcgis.com/THPojmskbjppDwMt/arcgis/rest/services/Electric_Outage_Data/FeatureServer/0',
+			url: 'https://services.arcgis.com/THPojmskbjppDwMt/arcgis/rest/services/Electric_Outage_Data/FeatureServer/0',
 			onEachFeature: configurePopup,
 			pointToLayer: function (geojson, latlng) {
 				if (geojson.properties.Customers_Affected == 0) { //zero outages
