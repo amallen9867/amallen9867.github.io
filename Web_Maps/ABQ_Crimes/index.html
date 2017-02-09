@@ -6,9 +6,9 @@
     <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
       on iOS devices-->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-    <script src="http://api.tiles.mapbox.com/mapbox.js/plugins/turf/v1.4.0/turf.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v1.4.0/turf.min.js"></script>
 	<style>
 		body {padding:0;margin:0;background-color:black;}
 		html, body {height:100%;width:100%;}
@@ -29,17 +29,17 @@
 
 	strAboutThisMap = ' | <a href="AboutThisMap.html">About this map</a>'
 	//base layers
-	var esriWorldStreetMap = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png', {
+	var esriWorldStreetMap = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png', {
 		maxZoom: 17, //20 LODs
-		attribution: 'Basemap &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
+		attribution: 'Basemap &copy; <a href="https://www.esri.com">ESRI</a>' + strAboutThisMap}),
 
-		esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
+		esriWorldImagery = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
 		maxZoom: 17, //20 LODs
-		attribution: 'Basemap &copy; <a href="http://www.esri.com">ESRI</a>' + strAboutThisMap}),
+		attribution: 'Basemap &copy; <a href="https://www.esri.com">ESRI</a>' + strAboutThisMap}),
 
-		osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		osmMapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 17, //17 LODs
-		attribution: 'Basemap &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>' + strAboutThisMap});
+		attribution: 'Basemap &copy; <a href="https://openstreetmap.org">OpenStreetMap</a>' + strAboutThisMap});
 		//Stamen has some cool basemaps too
 
 	//initialize the map

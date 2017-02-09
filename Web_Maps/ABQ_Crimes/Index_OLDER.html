@@ -15,14 +15,16 @@
 		#map_title {position:relative;text-align:center;font-family:verdana, arial, sans serif; font-size:11pt;background-color:cornsilk;border-style:solid;border-width:1px;height:22px;width:125px;margin:0 auto;z-index:99;}
 	</style>
     <title>ABQ Crime Map</title>
-	<script src="ABQ_boundary.json" type="text/javascript"></script>
+	<script type="text/javascript">
+	</script>
 </head>
 <body>
-	<div id='map' style='width:100%;height:100%'>
+	<div id='map' style='width:99%;height:99%'>
 		<div id='map_title'>ABQ Crime Map</div>
 	</div>
 	<script type="text/javascript">
 //***other stuff I could do:
+//city of ABQ boundary (or mask)
 //don't zoom out to marker bnds if current zoom is greater
 //zoom in beyond level 17 for ESRI basemaps and automatically zoom back out to max zoom of OSM
 //marker clustering for points right on top of each other
@@ -45,6 +47,7 @@
 	//initialize the map
 	var map = L.map('map', {
 		center: [35.10418, -106.62987],
+		//zoom: 12,
 		layers: [osmMapnik] //the default basemap
 	});
 
@@ -56,37 +59,15 @@
 	};
 	L.control.layers(baseLayers).addTo(map);
 
-	//add ABQ city limits poly
-	L.geoJson(abqBoundary,{style:{"weight":3,color:"#990000",opacity:0.8,dashArray:'5,5',fill:false}}).addTo(map);
-
 	//polygon to represent ABQ extent
 	var polygon = L.polygon([
-		[34.945, -106.540],
+		[34.945, -106.470],
 		[34.945, -106.800],
 		[35.220, -106.800],
-		[35.220, -106.540]
+		[35.220, -106.470]
 	])
 	//polygon.addTo(map); //visually confirm extent is correct (just for testing)
 	map.fitBounds(polygon.getBounds()); //zoom to bounds of ABQ rather than used fixed zoom; works better for devices of different sizes
-
-	//create icons for auto/burglary and all other crimes
-	var autoAndBurglaryIcon = new L.Icon({
-	  iconUrl: 'icons/marker-icon-2x-orange.png',
-	  shadowUrl: 'icons/marker-shadow.png',
-	  iconSize: [25, 41],
-	  iconAnchor: [12, 41],
-	  popupAnchor: [1, -34],
-	  shadowSize: [41, 41]
-	});
-
-	var otherCrimesIcon = new L.Icon({
-	  iconUrl: 'icons/marker-icon-2x-blue.png',
-	  shadowUrl: 'icons/marker-shadow.png',
-	  iconSize: [25, 41],
-	  iconAnchor: [12, 41],
-	  popupAnchor: [1, -34],
-	  shadowSize: [41, 41]
-	});
 
 	//placeholder if I ever want a "user clicked here" icon, like a crosshair
 	/*var CampIcon = L.Icon.extend({
@@ -149,20 +130,20 @@
 				//console.log(http.responseText);
 				var result = JSON.parse(http.responseText);
 				for(x = 0; x < Object.keys(result.features).length; x++){ //loop thru results
-					if (result.features[x].attributes.CVINC_TYPE == "AUTO BURGLARY" || result.features[x].attributes.CVINC_TYPE == "AUTO THEFT" || result.features[x].attributes.CVINC_TYPE == "BURGLARY/BREAKING AND ENTERING") { //show AUTO BURGLARY, AUTO THEFT, BURGLARY/BREAKING AND ENTERING
-						//xy = result.features[x].geometry;
-						//console.log(result.features[x].geometry);
-						adate = new Date(result.features[x].attributes.date);
-						marker = L.marker([result.features[x].geometry.y,result.features[x].geometry.x],{icon: autoAndBurglaryIcon}).bindPopup('<b>' + result.features[x].attributes.CVINC_TYPE + '</b><br>' + adate.toDateString()); //create crime marker and popup info
-						markers.addLayer(marker); //add marker to markers feature group
-					} else { //show what's left
-						if (!onlyAutoAndBurglary) { //but only if user hasn't checked 'Only Auto & Burglary' box
+					if (onlyAutoAndBurglary) { //only keep AUTO BURGLARY, AUTO THEFT, BURGLARY/BREAKING AND ENTERING
+						if (result.features[x].attributes.CVINC_TYPE == "AUTO BURGLARY" || result.features[x].attributes.CVINC_TYPE == "AUTO THEFT" || result.features[x].attributes.CVINC_TYPE == "BURGLARY/BREAKING AND ENTERING") {
 							//xy = result.features[x].geometry;
 							//console.log(result.features[x].geometry);
 							adate = new Date(result.features[x].attributes.date);
-							marker = L.marker([result.features[x].geometry.y,result.features[x].geometry.x],{icon: otherCrimesIcon}).bindPopup('<b>' + result.features[x].attributes.CVINC_TYPE + '</b><br>' + adate.toDateString()); //create crime marker and popup info
+							marker = L.marker([result.features[x].geometry.y,result.features[x].geometry.x]).bindPopup('<b>' + result.features[x].attributes.CVINC_TYPE + '</b><br>' + adate.toDateString()); //create crime marker and popup info
 							markers.addLayer(marker); //add marker to markers feature group
 						}
+					} else { //show all crimes (default)
+						//xy = result.features[x].geometry;
+						//console.log(result.features[x].geometry);
+						adate = new Date(result.features[x].attributes.date);
+						marker = L.marker([result.features[x].geometry.y,result.features[x].geometry.x]).bindPopup('<b>' + result.features[x].attributes.CVINC_TYPE + '</b><br>' + adate.toDateString()); //create crime marker and popup info
+						markers.addLayer(marker); //add marker to markers feature group
 					}
 				}
 				map.addLayer(markers); //add the feature group of crime markers to the map
