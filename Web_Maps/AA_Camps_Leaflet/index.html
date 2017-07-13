@@ -79,10 +79,10 @@
         var notClickedYet = 1; //initialize boolean to fire click event the first time
         function popup(feature, layer) {
             layer.on('click', function() {
-                if (feature.properties && feature.properties.Description && (map.getZoom() < 15)) {
-                    layer.bindPopup(feature.properties.Description + "<table id='smallStyle' width=100%><tr><td>&nbsp;<a href='javascript:map.setView([" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "],(map.getMaxZoom() - 1));map.closePopup();void(0);'>Zoom To Camp</a></td><td align=right><a href='javascript:map.eachLayer(function (layer){if (layer.options.maxZoom > 0){map.removeLayer(layer);}});map.addLayer(esriWorldImagery);map.setView([" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "],15);map.closePopup();void(0);'>(Zoom and switch to imagery)</a>&nbsp;&nbsp;</td></tr></table>");
+                if (feature.properties && feature.properties.description && (map.getZoom() < 15)) {
+                    layer.bindPopup(feature.properties.description + "<table id='smallStyle' width=100%><tr><td>&nbsp;<a href='javascript:map.setView([" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "],(map.getMaxZoom() - 1));map.closePopup();void(0);'>Zoom To Camp</a></td><td align=right><a href='javascript:map.eachLayer(function (layer){if (layer.options.maxZoom > 0){map.removeLayer(layer);}});map.addLayer(esriWorldImagery);map.setView([" + feature.geometry.coordinates[1] + "," + feature.geometry.coordinates[0] + "],15);map.closePopup();void(0);'>(Zoom and switch to imagery)</a>&nbsp;&nbsp;</td></tr></table>");
                 } else {
-                    layer.bindPopup(feature.properties.Description);
+                    layer.bindPopup(feature.properties.description);
                 }
             });
             if (notClickedYet) {layer.fire('click');}; //firing the click event here in order to bind initial popup content; otherwise the user has to click the marker twice to see popup info the first time

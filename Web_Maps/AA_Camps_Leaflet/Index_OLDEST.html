@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Leaflet geojson cluster example</title>
+	<title>AA Camps - Leaflet</title>
 	<meta charset="utf-8" />
-	<!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="Leaflet.markercluster-master/example/screen.css" />
+    <!--<link rel="stylesheet" href="Leaflet.markercluster-master/example/screen.css" />-->
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 	<link rel="stylesheet" href="Leaflet.markercluster-master/dist/MarkerCluster.css" />
@@ -78,6 +77,7 @@
 		//L.marker([35.121, -106.616], {icon: aCampIcon}).bindPopup("I am a camp icon.").addTo(map);
         //var marker = L.marker([35.121, -106.616]).addTo(map); //test marker at coordinates Y,X; you want it to align with the icon
 
+        var notClickedYet = 1; //initialize boolean to fire click event the first time
         function popup(feature, layer) {
             layer.on('click', function() {
                 if (feature.properties && feature.properties.Description && (map.getZoom() < 15)) {
@@ -86,6 +86,7 @@
                     layer.bindPopup(feature.properties.Description);
                 }
             });
+            if (notClickedYet) {layer.fire('click');}; //firing the click event here in order to bind initial popup content; otherwise the user has to click the marker twice to see popup info the first time
         }
 
 		var markers = L.markerClusterGroup();
@@ -109,6 +110,7 @@
             }
         });
 
+        notClickedYet = 0; //clear boolean to fire click event
 	</script>
 </body>
 </html>

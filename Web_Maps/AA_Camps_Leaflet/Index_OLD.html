@@ -4,12 +4,11 @@
 	<title>AA Camps - Leaflet</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!--<link rel="stylesheet" href="Leaflet.markercluster-master/example/screen.css" />-->
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-	<link rel="stylesheet" href="Leaflet.markercluster-master/dist/MarkerCluster.css" />
-	<link rel="stylesheet" href="Leaflet.markercluster-master/dist/MarkerCluster.Default.css" />
-	<script src="Leaflet.markercluster-master/dist/leaflet.markercluster-src.js"></script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+	<link rel="stylesheet" href="Leaflet.markercluster/MarkerCluster.css" />
+	<link rel="stylesheet" href="Leaflet.markercluster/MarkerCluster.Default.css" />
+	<script src="Leaflet.markercluster/leaflet.markercluster-src.js"></script>
 	<style>
 		body {padding:0;margin:0;background-color:black}
 		html, body {height:100%;width:100%;}
@@ -17,33 +16,33 @@
 
 </head>
 <body>
-	<div id="map" style="width:98%;height:98%"></div>
+	<div id="map" style="width:100%;height:100%"></div>
     <script src="AA_Outdoor_Adventures.json" type="text/javascript"></script>
 	<script type="text/javascript">
 
         //base layers you want to use
-        var esriNatGeoWorld = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
+        var esriNatGeoWorld = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {
 			maxZoom: 16, //17 LODs
-			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+			attribution: 'Map data by &copy; <a href="https://www.esri.com">ESRI</a>'}),
 
-            esriWorldImagery = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
+            esriWorldImagery = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png', {
 			maxZoom: 18, //19 LODs
-			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+			attribution: 'Map data by &copy; <a href="https://www.esri.com">ESRI</a>'}),
 
-            esriUSATopos = L.tileLayer('http://server.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/{z}/{y}/{x}.png', {
+            esriUSATopos = L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/tile/{z}/{y}/{x}.png', {
 			maxZoom: 15, //16 LODs
-			attribution: 'Map data by &copy; <a href="http://www.esri.com">ESRI</a>'}),
+			attribution: 'Map data by &copy; <a href="https://www.esri.com">ESRI</a>'}),
 
             /*mapBox = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
 			maxZoom: 18,
             id: 'examples.map-i86knfo3',
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'© <a href="http://mapbox.com">Mapbox</a>'}),*/
+			attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'© <a href="https://mapbox.com">Mapbox</a>'}),*/
 
-            osmMapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            osmMapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 16, //17 LODs
-			attribution: 'Map data by &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'});
+			attribution: 'Map data by &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'});
             //Stamen has some cool basemaps too
 
         //initialize the map
