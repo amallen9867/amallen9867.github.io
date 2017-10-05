@@ -1469,5 +1469,50 @@
 <fme:What>An overnight trip with the visiting Healys.</fme:What>
 <fme:Accuracy>Approx</fme:Accuracy>
 </fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-109.827651590219</fme:X_Geo>
+<fme:Y_Geo>38.3298286921824</fme:Y_Geo>
+<fme:Where>UT Canyon Country - Day 1</fme:Where>
+<fme:Who>Juan E, Angie, Krista, Dwight</fme:Who>
+<fme:When>201709</fme:When>
+<fme:What>Gooseberry B - Island In The Sky, Canyonlands</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-110.009131865676</fme:X_Geo>
+<fme:Y_Geo>38.4523279754836</fme:Y_Geo>
+<fme:Where>UT Canyon Country - Day 2</fme:Where>
+<fme:Who>Juan E, Angie, Krista, Dwight</fme:Who>
+<fme:When>201709</fme:When>
+<fme:What>Hardscrabble A - Island In The Sky, Canyonlands. (Day 3 was in Green River.)</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-110.134904416378</fme:X_Geo>
+<fme:Y_Geo>38.1307741756516</fme:Y_Geo>
+<fme:Where>UT Canyon Country - Day 4</fme:Where>
+<fme:Who>Juan E, Angie, Krista, Dwight</fme:Who>
+<fme:When>201709</fme:When>
+<fme:What>Flint Seep - The Maze, Canyonlands. (Day 3 was in Green River.)</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-109.975153109436</fme:X_Geo>
+<fme:Y_Geo>38.1858044790069</fme:Y_Geo>
+<fme:Where>UT Canyon Country - Day 5 and 6</fme:Where>
+<fme:Who>Juan E, Angie, Krista, Dwight</fme:Who>
+<fme:When>201709</fme:When>
+<fme:What>Chimney Rock - The Maze, Canyonlands</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-109.733064681211</fme:X_Geo>
+<fme:Y_Geo>37.5275509160596</fme:Y_Geo>
+<fme:Where>UT Canyon Country - Day 7</fme:Where>
+<fme:Who>Juan E, Angie</fme:Who>
+<fme:When>201709</fme:When>
+<fme:What>Cave Towers at head of Mule Canyon, Cedar Mesa</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
 </fme:Camps-table>
 </fme:xml-tables>
