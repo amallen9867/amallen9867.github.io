@@ -373,7 +373,7 @@
 <fme:Camps>
 <fme:X_Geo>-108.029141203859</fme:X_Geo>
 <fme:Y_Geo>33.1850838302175</fme:Y_Geo>
-<fme:Where>Gila</fme:Where>
+<fme:Where>Gila at Upper Black Canyon Campground</fme:Where>
 <fme:Who>Pflo, Cammie, Jennifer, Squeeky, Kiwi</fme:Who>
 <fme:When>199510</fme:When>
 <fme:What>Aborted backpacking trip. Boomin' near camp. Beautiful fall colors.</fme:What>
@@ -1475,7 +1475,7 @@
 <fme:Where>UT Canyon Country - Day 1</fme:Where>
 <fme:Who>Juan E, Angie, Krista, Dwight</fme:Who>
 <fme:When>201709</fme:When>
-<fme:What>Gooseberry B - Island In The Sky, Canyonlands</fme:What>
+<fme:What>Camped at Gooseberry B - Island In The Sky, Canyonlands.</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 <fme:Camps>
@@ -1484,7 +1484,7 @@
 <fme:Where>UT Canyon Country - Day 2</fme:Where>
 <fme:Who>Juan E, Angie, Krista, Dwight</fme:Who>
 <fme:When>201709</fme:When>
-<fme:What>Hardscrabble A - Island In The Sky, Canyonlands. (Day 3 was in Green River.)</fme:What>
+<fme:What>Camped at Hardscrabble A - Island In The Sky, Canyonlands. (Day 3 was in Green River.)</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 <fme:Camps>
@@ -1493,7 +1493,7 @@
 <fme:Where>UT Canyon Country - Day 4</fme:Where>
 <fme:Who>Juan E, Angie, Krista, Dwight</fme:Who>
 <fme:When>201709</fme:When>
-<fme:What>Flint Seep - The Maze, Canyonlands. (Day 3 was in Green River.)</fme:What>
+<fme:What>Camped at Flint Seep - The Maze, Canyonlands. (Day 3 was in Green River.)</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 <fme:Camps>
@@ -1502,7 +1502,7 @@
 <fme:Where>UT Canyon Country - Day 5 and 6</fme:Where>
 <fme:Who>Juan E, Angie, Krista, Dwight</fme:Who>
 <fme:When>201709</fme:When>
-<fme:What>Chimney Rock - The Maze, Canyonlands</fme:What>
+<fme:What>Camped at Chimney Rock - The Maze, Canyonlands.</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 <fme:Camps>
@@ -1511,7 +1511,25 @@
 <fme:Where>UT Canyon Country - Day 7</fme:Where>
 <fme:Who>Juan E, Angie</fme:Who>
 <fme:When>201709</fme:When>
-<fme:What>Cave Towers at head of Mule Canyon, Cedar Mesa</fme:What>
+<fme:What>Camped at Cave Towers at the head of Mule Canyon, Cedar Mesa.</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-107.415942410209</fme:X_Geo>
+<fme:Y_Geo>33.4963134925552</fme:Y_Geo>
+<fme:Where>Luna Park</fme:Where>
+<fme:Who>Steve, Michelle</fme:Who>
+<fme:When>201709</fme:When>
+<fme:What>Fun weekend climbing with Michelle and Steve! Everybody else bails. Finally got some mojo back lead climbing.</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-108.592863121391</fme:X_Geo>
+<fme:Y_Geo>33.3974837408442</fme:Y_Geo>
+<fme:Where>Gila - Ben Lilly Campground</fme:Where>
+<fme:Who>Larry Layne</fme:Who>
+<fme:When>201711</fme:When>
+<fme:What>Looking for wolves. No sightings but heard them howl every night. Did see javelina, elk, coyote, and birds including 5 eagles (4 golden, 1 bald) feeding on an elk. Very warm and dry!</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 </fme:Camps-table>
