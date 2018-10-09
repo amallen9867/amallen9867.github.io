@@ -110,8 +110,8 @@
 <fme:Accuracy>Approx</fme:Accuracy>
 </fme:Camps>
 <fme:Camps>
-<fme:X_Geo>-109.21506810507</fme:X_Geo>
-<fme:Y_Geo>31.8945808243494</fme:Y_Geo>
+<fme:X_Geo>-109.215172145005</fme:X_Geo>
+<fme:Y_Geo>31.893959835984</fme:Y_Geo>
 <fme:Where>Chiricahuas</fme:Where>
 <fme:Who>Lisa, Larry Layne, Jazz</fme:Who>
 <fme:When>200503</fme:When>
@@ -1530,6 +1530,33 @@
 <fme:Who>Larry Layne</fme:Who>
 <fme:When>201711</fme:When>
 <fme:What>Looking for wolves. No sightings but heard them howl every night. Did see javelina, elk, coyote, and birds including 5 eagles (4 golden, 1 bald) feeding on an elk. Very warm and dry!</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-109.215432588541</fme:X_Geo>
+<fme:Y_Geo>31.8940249128115</fme:Y_Geo>
+<fme:Where>Chiricahuas</fme:Where>
+<fme:Who>solo</fme:Who>
+<fme:When>201805</fme:When>
+<fme:What>First night of birding trip.</fme:What>
+<fme:Accuracy>Approx</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-109.177849632266</fme:X_Geo>
+<fme:Y_Geo>31.8842840307536</fme:Y_Geo>
+<fme:Where>Chiricahuas</fme:Where>
+<fme:Who>solo</fme:Who>
+<fme:When>201805</fme:When>
+<fme:What>Last two nights of birding trip. Identified 60 species total, including my first red-faced warbler. Nice weather, met some interesting people, and saw a bobcat on the drive out!</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-107.415665475666</fme:X_Geo>
+<fme:Y_Geo>33.4962134285065</fme:Y_Geo>
+<fme:Where>Luna Park</fme:Where>
+<fme:Who>Steve, Michelle, Lawrence, Sara, and more!</fme:Who>
+<fme:When>201810</fme:When>
+<fme:What>Climbing weekend with good friends! Lawrence makes his return to real rock. I finally send the tricky dihedral Rocket Science (5.10).</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 </fme:Camps-table>
