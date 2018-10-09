@@ -1530,6 +1530,7 @@
 <fme:Who>Larry Layne</fme:Who>
 <fme:When>201711</fme:When>
 <fme:What>Looking for wolves. No sightings but heard them howl every night. Did see javelina, elk, coyote, and birds including 5 eagles (4 golden, 1 bald) feeding on an elk. Very warm and dry!</fme:What>
+<<<<<<< HEAD
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 <fme:Camps>
@@ -1548,6 +1549,8 @@
 <fme:Who>solo</fme:Who>
 <fme:When>201805</fme:When>
 <fme:What>Last two nights of birding trip. Identified 60 species total, including my first red-faced warbler. Nice weather. Met some interesting people. Saw a bobcat on the drive out!</fme:What>
+=======
+>>>>>>> 2cfe6d32282d71fb2808a618d2f47a174762f6b9
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 </fme:Camps-table>
