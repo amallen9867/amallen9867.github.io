@@ -1547,7 +1547,6 @@
 <fme:Where>Chiricahuas</fme:Where>
 <fme:Who>solo</fme:Who>
 <fme:When>201805</fme:When>
-<<<<<<< HEAD
 <fme:What>Last two nights of birding trip. Identified 60 species total, including my first red-faced warbler. Nice weather, met some interesting people, and saw a bobcat on the drive out!</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
@@ -1558,9 +1557,6 @@
 <fme:Who>Steve, Michelle, Lawrence, Sara, and more!</fme:Who>
 <fme:When>201810</fme:When>
 <fme:What>Climbing weekend with good friends! Lawrence makes his return to real rock. I finally send the tricky dihedral Rocket Science (5.10).</fme:What>
-=======
-<fme:What>Last two nights of birding trip. Identified 60 species total, including my first red-faced warbler. Nice weather. Met some interesting people. Saw a bobcat on the drive out!</fme:What>
->>>>>>> 2cfe6d32282d71fb2808a618d2f47a174762f6b9
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 </fme:Camps-table>
