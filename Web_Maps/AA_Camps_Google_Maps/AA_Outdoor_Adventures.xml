@@ -1559,5 +1559,14 @@
 <fme:What>Climbing weekend with good friends! Lawrence makes his return to real rock. I finally send the tricky dihedral Rocket Science (5.10).</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-109.175731982534</fme:X_Geo>
+<fme:Y_Geo>31.8852398810395</fme:Y_Geo>
+<fme:Where>Chiricahuas</fme:Where>
+<fme:Who>Juan E</fme:Who>
+<fme:When>201904.5</fme:When>
+<fme:What>Camping, hiking, birding, and border experiences with Juan E.</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
 </fme:Camps-table>
 </fme:xml-tables>
