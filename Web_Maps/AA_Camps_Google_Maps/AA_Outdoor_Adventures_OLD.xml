@@ -1547,7 +1547,16 @@
 <fme:Where>Chiricahuas</fme:Where>
 <fme:Who>solo</fme:Who>
 <fme:When>201805</fme:When>
-<fme:What>Last two nights of birding trip. Identified 60 species total, including my first red-faced warbler. Nice weather. Met some interesting people. Saw a bobcat on the drive out!</fme:What>
+<fme:What>Last two nights of birding trip. Identified 60 species total, including my first red-faced warbler. Nice weather, met some interesting people, and saw a bobcat on the drive out!</fme:What>
+<fme:Accuracy>Precise</fme:Accuracy>
+</fme:Camps>
+<fme:Camps>
+<fme:X_Geo>-107.415665475666</fme:X_Geo>
+<fme:Y_Geo>33.4962134285065</fme:Y_Geo>
+<fme:Where>Luna Park</fme:Where>
+<fme:Who>Steve, Michelle, Lawrence, Sara, and more!</fme:Who>
+<fme:When>201810</fme:When>
+<fme:What>Climbing weekend with good friends! Lawrence makes his return to real rock. I finally send the tricky dihedral Rocket Science (5.10).</fme:What>
 <fme:Accuracy>Precise</fme:Accuracy>
 </fme:Camps>
 </fme:Camps-table>
